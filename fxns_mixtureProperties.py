@@ -26,23 +26,23 @@ def K2C(T):
     """
     return T - 273.15
 
-def calc_mixture_density(fuel, T):
+def calc_mixture_density(fuel, T, Yi):
     """
     Calculate the mixture density of the fuel at a given temperature.
 
     Parameters:
     fuel: Object of the fuel class containing properties.
     T (float): Temperature in Kelvin.
+    Yi (np.ndarray): Mass fractions of each compound (shape: num_compounds,).
 
     Returns:
     float: Mixture density in kg/m^3.
     """
-    y = fuel.Y_l0  # Mass fractions of the fuel components
     MW = fuel.MW   # Molecular weights of the fuel components (kg/mol)
     Vm = fuel.molar_liquid_vol(T)  # Molar volume of the fuel (m^3/mol)
 
     # Calculate density (kg/m^3)
-    density_drop = np.dot(MW, y) / np.dot(Vm, y)
+    density_drop = (MW @ Yi) / (Vm @ Yi)
 
     return density_drop 
 
@@ -70,13 +70,14 @@ def calc_components_viscosity(fuel, T):
 
     return nu 
 
-def calc_mixture_viscosity(fuel, T, radius, model=1):
+def calc_mixture_viscosity(fuel, T, Yi, radius, model=1):
     """
     Calculate the viscosity of the fuel mixture at a given temperature and droplet radius.
 
     Parameters:
     fuel: Object of the fuel class containing properties.
     T (float): Temperature in Kelvin.
+    Yi (np.ndarray): Mass fractions of each compound (shape: num_compounds,).
     radius (float): Radius of the droplet (m).
     model (int, optional): Mixing model to use (1 for Kendall-Monroe, others for Arrhenius). Default is 1.
 
@@ -86,8 +87,8 @@ def calc_mixture_viscosity(fuel, T, radius, model=1):
     nu_i = calc_components_viscosity(fuel, T)  # Viscosities of individual components
 
     MW = fuel.MW  # Molecular weights of the fuel components (kg/mol)
-    Y_li = fuel.Y_l0  # Mass fractions of the fuel components
-    massVec = dropletFxns.massVector(fuel, radius, Y_li, T)  # Mass vector of each compound
+    
+    massVec = dropletFxns.massVector(fuel, radius, Yi, T)  # Mass vector of each compound
 
     # Calculate group mole fractions for each species
     x_l = dropletFxns.moleFracVec(massVec, MW)

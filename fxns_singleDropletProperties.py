@@ -71,7 +71,7 @@ def massVector(fuel, radius, Yi, T):
     Parameters:
     fuel (object): An instance of the groupContribution class.
     radius (float): Radius of the droplet in meters.
-    Yi (np.ndarray): Mole fractions of each compound (shape: num_compounds,).
+    Yi (np.ndarray): Mass fractions of each compound (shape: num_compounds,).
     T (float): Temperature in Kelvin.
 
     Returns:

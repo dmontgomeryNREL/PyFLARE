@@ -51,12 +51,12 @@ colors = ['','tab:purple','tab:blue','tab:red','tab:orange','tab:green']
 
 for i in range(0,len(T)): 
     # Mixture density (returns rho in kg/m^3)
-    rho[i] = fxns_mix.calc_mixture_density(fuel,T[i])
+    rho[i] = fxns_mix.calc_mixture_density(fuel,T[i],fuel.Y_l0)
     # Convert density to CGS (g/cm^3)
     rho[i] *= 1.0e-03 
 
     # Mixture viscosity (returns nu in m^2/s)
-    nu[i] = fxns_mix.calc_mixture_viscosity(fuel,T[i],drop['r_0'],1)
+    nu[i] = fxns_mix.calc_mixture_viscosity(fuel,T[i],fuel.Y_l0,drop['r_0'])
     # Convert viscosity to mm^2/s
     nu[i] *= 1.0e+06
 
