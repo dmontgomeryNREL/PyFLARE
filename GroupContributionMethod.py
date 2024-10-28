@@ -9,7 +9,7 @@ class groupContribution:
     """
     
     # Paths to input directories
-    GCM_PATH = os.getcwd()
+    GCM_PATH = os.path.dirname(os.path.abspath(__file__))
     gcmTableDir = os.path.join(GCM_PATH, 'gcmTableData')
     fuelData = os.path.join(GCM_PATH, 'fuelData')
     compDescDir = os.path.join(fuelData, 'compoundDescriptions')
