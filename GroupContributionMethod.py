@@ -118,8 +118,7 @@ class groupContribution:
 
         # Standard heat of vaporization
         self.Lv_stp = (6.829 + (np.matmul(self.Nij,self.hv1k)) ) * 1e3 # J/mol
-        # Not sure why this is scaled by 1/molecular weight?
-        self.Lv_stp = np.divide(self.Lv_stp, self.MW)
+        self.Lv_stp = np.divide(self.Lv_stp, self.MW) # Convert to J/kg
 
         # Molar liquid volume at standard temperature
         self.Vm_stp = 1e-3 * (0.01211 + ( np.matmul(self.Nij,self.Vliq1k) )) # m^3/mol
