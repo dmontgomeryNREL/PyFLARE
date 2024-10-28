@@ -1,5 +1,5 @@
 # Group Contribution Method
-This code utilizes the tables and functions proposed by [Constantinou and Gani (1994)](https://doi.org/10.1002/aic.690401011) and [Constantinou, Gani and O'Connel (1995)](https://doi.org/10.1016/0378-3812(94)02593-P), with additional physical properties discussed in [Govindaraju & Ihme (2016)](https://doi.org/10.1016/j.ijheatmasstransfer.2016.06.079), to calculate the thermodynamic properties of jet fuels.  The code is based on Pavan Bharadwaj's [Matlab implementation](https://github.com/gpavanb-old/GroupContribution).
+This code utilizes the tables and functions proposed by [Constantinou and Gani (1994)](https://doi.org/10.1002/aic.690401011) and [Constantinou, Gani and O'Connel (1995)](https://doi.org/10.1016/0378-3812(94)02593-P), with additional physical properties discussed in [Govindaraju & Ihme (2016)](https://doi.org/10.1016/j.ijheatmasstransfer.2016.06.079), to calculate the thermodynamic properties of jet fuels.  The code is based on Pavan B. Govindaraju's [Matlab implementation](https://github.com/gpavanb-old/GroupContribution) of the GCM.
 
 ## Python Environment
 The following conda environment is required to run this code:
