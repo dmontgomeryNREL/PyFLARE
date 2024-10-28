@@ -12,12 +12,12 @@ def moleFracVec(massVector, MW):
     Xi np.ndarray: Molar fractions of the compounds (shape: num_compounds,).
     """
     # Calculate the number of moles for each compound
-    mole_num = np.divide(massVector, MW)
+    mole_num = massVector / MW
     
     # Normalize to get group mole fractions
     total_moles = np.sum(mole_num)
     if total_moles != 0:
-        Xi = np.divide(mole_num, total_moles)
+        Xi = mole_num / total_moles
     
     return Xi
 
@@ -33,8 +33,8 @@ def droplet_radius_from_mass(fuel, massVector, T):
     Returns:
     float: Radius of the droplet in meters
     """
-    rho = np.divide(fuel.MW, fuel.molar_liquid_vol(T))
-    vol = np.sum(np.divide(massVector, rho))
+    rho = fuel.MW / fuel.molar_liquid_vol(T)
+    vol = np.sum(massVector / rho)
         
     # Calculate and return the radius
     return (3 * vol / (4 * np.pi))**(1/3) if vol > 0 else 0.0
@@ -82,6 +82,6 @@ def massVector(fuel, radius, Yi, T):
     
     # Calculate mass vector based on volume and mole fractions
     if volume > 0:
-        return np.multiply((volume / np.dot(fuel.molar_liquid_vol(T), Yi)) * Yi, MW)
+        return (volume / (fuel.molar_liquid_vol(T) @ Yi)) * Yi * MW
     else:
         return np.zeros_like(Yi)

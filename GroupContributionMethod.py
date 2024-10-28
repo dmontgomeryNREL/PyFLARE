@@ -118,7 +118,7 @@ class groupContribution:
 
         # Standard heat of vaporization
         self.Lv_stp = (6.829 + (np.matmul(self.Nij,self.hv1k)) ) * 1e3 # J/mol
-        self.Lv_stp = np.divide(self.Lv_stp, self.MW) # Convert to J/kg
+        self.Lv_stp = self.Lv_stp / self.MW # Convert to J/kg
 
         # Molar liquid volume at standard temperature
         self.Vm_stp = 1e-3 * (0.01211 + ( np.matmul(self.Nij,self.Vliq1k) )) # m^3/mol
@@ -174,13 +174,12 @@ class groupContribution:
         Returns:
         np.ndarray: Saturated vapor pressure in Pa.
         """
-        Tr = np.divide(T,self.Tc)
-        f0 = 5.92714 - np.divide(6.09648, Tr) - 1.28862 * np.log(Tr) \
-            + 0.169347 * np.power(Tr, 6)
-        f1 = 15.2518 - np.divide(15.6875, Tr) - 13.4721 * np.log(Tr) \
-            + 0.43577  * np.power(Tr, 6)
+        Tr = T / self.Tc
+        f0 = 5.92714 - (6.09648 / Tr) - 1.28862 * np.log(Tr) + 0.169347 * (Tr ** 6)
+        f1 = 15.2518 - (15.6875 / Tr) - 13.4721 * np.log(Tr) + 0.43577 * (Tr ** 6)
+
         rhs = np.exp((f0 + (self.omega * f1)))
-        psat = np.multiply(self.Pc, rhs) 
+        psat = self.Pc * rhs 
         return psat
     
     def molar_liquid_vol(self, T):
@@ -196,14 +195,14 @@ class groupContribution:
         
         Tstp = 298.
         phi = np.zeros_like(self.Tc)
-        for i in range(0,self.Tc.shape[0]):
-            if (T > self.Tc[i]):
-                phi[i] = - ((1 - (np.divide(Tstp,self.Tc[i]) ) )**(2.0/7.0))
+        for i in range(len(self.Tc)):
+            if T > self.Tc[i]:
+                phi[i] = -((1 - (Tstp / self.Tc[i])) ** (2.0 / 7.0))
             else:
-                phi[i] = ((1 - (np.divide(T,self.Tc[i]) ) )**(2.0/7.0)) \
-                            - ((1 - (np.divide(Tstp,self.Tc[i]) ) )**(2.0/7.0))
+                phi[i] = ((1 - (T / self.Tc[i])) ** (2.0 / 7.0)) \
+                        - ((1 - (Tstp / self.Tc[i])) ** (2.0 / 7.0))
         z_vec = (0.29056 - 0.08775 * self.omega)
-        Vmi = np.multiply(self.Vm_stp, (np.power(z_vec,phi)) )
+        Vmi = self.Vm_stp * np.power(z_vec,phi)
         return Vmi
     
     def enthalpy_vaporization(self, T):
@@ -218,14 +217,14 @@ class groupContribution:
         """
         Lvi = np.zeros_like(self.Tc)
         
-        Tr    = np.divide(T,self.Tc)
-        Trnbi = np.divide(self.Tb,self.Tc)
+        Tr    = T / self.Tc
+        Trnbi = self.Tb / self.Tc
 
         for i in range(0,self.Tc.shape[0]):
             if (T > self.Tc[i]):
                 Lvi[i] = 0.
             else:
-                Lvi[i] =  np.multiply(self.Lv_stp[i], (np.divide( (1. - Tr[i] ), (1. - Trnbi[i]) )**0.38))
+                Lvi[i] =  self.Lv_stp[i] * (( (1. - Tr[i] ) / (1. - Trnbi[i]) )**0.38)
         
         return Lvi
     
@@ -244,9 +243,9 @@ class groupContribution:
         # Eps and Sigma for air, replace with desired gas phase
         eps_air = 78.6 
         Sigma_air = 3.711e-10 
-        sigmaAB = (Sigma_air + self.SigmaVec)/2
-        evaVec = np.power((self.epsVec * eps_air), 0.5)
-        Tstar  = np.divide(Tin, evaVec)
+        sigmaAB = (Sigma_air + self.SigmaVec) / 2
+        evaVec = (self.epsVec * eps_air) ** 0.5
+        Tstar = Tin / evaVec
         A = 1.06036
         B = 0.15610
         C = 0.193
@@ -255,13 +254,14 @@ class groupContribution:
         F = 1.52996
         G = 1.76474
         H = 3.89411
-        
-        omegaD = np.divide(A,(np.power(Tstar,B))) + np.divide(C,np.exp(D * Tstar)) + np.divide(E,np.exp(F * Tstar)) + np.divide(G, np.exp(H * Tstar))
-        
+
+        omegaD = A / (Tstar ** B) + C / np.exp(D * Tstar) + E / np.exp(F * Tstar) + G / np.exp(H * Tstar)
+
         # Molecular weight for air, replace with desired gas phase
         MW_air = 28.97e-3
 
-        MWa = 2e3 * np.divide( (self.MW * MW_air), (self.MW + MW_air))
+        MWa = 2e3 * (self.MW * MW_air) / (self.MW + MW_air)
 
-        r =  (1/p) * 1e5 * np.divide( (  (3.03 - np.divide(0.98,( np.power(MWa,0.5)) ) ) * 1e-27 * (Tin**1.5) ) , ( np.multiply(np.multiply( np.power(MWa,0.5), np.power(sigmaAB,2)  ) ,omegaD ) ) )
+        r = (1 / p) * 1e5 * ((3.03 - (0.98 / (MWa ** 0.5))) * 1e-27 * (Tin ** 1.5)) / ((MWa ** 0.5) * (sigmaAB ** 2) * omegaD)
+
         return r

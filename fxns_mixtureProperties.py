@@ -61,8 +61,8 @@ def calc_components_viscosity(fuel, T):
     T_celsius = K2C(T)  # Convert temperature to Celsius
 
     # RHS of Dutt's equation (4.23) 
-    rhs = -3.0171 + np.divide((442.78 + 1.6452 * K2C(fuel.Tb)), 
-                               T_celsius + 239 - 0.19 * K2C(fuel.Tb))
+    rhs = -3.0171 + (442.78 + 1.6452 * K2C(fuel.Tb)) / (T_celsius + 239 - 0.19 * K2C(fuel.Tb))
+
     nu = np.exp(rhs)  # Viscosity in mm^2/s 
 
     # Convert to SI (m^2/s)
@@ -94,9 +94,9 @@ def calc_mixture_viscosity(fuel, T, radius, model=1):
     
     if model == 1:
         # Kendall-Monroe mixing model
-        nu = np.sum(np.multiply(x_l, nu_i ** (1.0 / 3.0))) ** (3.0)
+        nu = np.sum(x_l * (nu_i ** (1.0 / 3.0))) ** (3.0)
     else:
         # Arrhenius mixing model
-        nu = np.exp(np.sum(np.multiply(x_l, np.log(nu_i))))
+        nu = np.exp(np.sum(x_l * np.log(nu_i)))
     
     return nu
