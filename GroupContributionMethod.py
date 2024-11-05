@@ -39,7 +39,7 @@ class groupContribution:
     Tb1k   = None
     
     # Initial composition and functional group data for fuel
-    Y_l0 = None  # Initial mass fraction for fuel (num_compounds,)
+    Y_0 = None  # Initial mass fraction for fuel (num_compounds,)
     Nij = None  # Compound vs. group matrix (num_compounds, num_groups)
     
     # critical properties (num_compounds,)
@@ -92,8 +92,8 @@ class groupContribution:
 
         # Read initial liquid composition of fuel and normalize to get massfrac
         fuel_init_data_df = pd.read_excel(self.fuel_init_data, usecols=[1])
-        self.Y_l0 = fuel_init_data_df.to_numpy().flatten().astype(float)
-        self.Y_l0 /= np.sum(self.Y_l0) 
+        self.Y_0 = fuel_init_data_df.to_numpy().flatten().astype(float)
+        self.Y_0 /= np.sum(self.Y_0) 
         
         # --- compute critical properties/stp properties (num_compounds,)
         # Molecular weights

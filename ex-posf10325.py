@@ -31,7 +31,7 @@ drop['r_0'] = drop['d_0']/2.0 # initial droplet radius (m)
 fuel = gcm.groupContribution(fuel_name)
 
 # initial liquid mass fractions
-Y_li = fuel.Y_l0
+Y_li = fuel.Y_0
 
 # number of compounds
 num_compounds = fuel.num_compounds
@@ -51,12 +51,12 @@ colors = ['','tab:purple','tab:blue','tab:red','tab:orange','tab:green']
 
 for i in range(0,len(T)): 
     # Mixture density (returns rho in kg/m^3)
-    rho[i] = fxns_mix.calc_mixture_density(fuel,T[i],fuel.Y_l0)
+    rho[i] = fxns_mix.calc_mixture_density(fuel,T[i],fuel.Y_0)
     # Convert density to CGS (g/cm^3)
     rho[i] *= 1.0e-03 
 
     # Mixture viscosity (returns nu in m^2/s)
-    nu[i] = fxns_mix.calc_mixture_viscosity(fuel,T[i],fuel.Y_l0,drop['r_0'])
+    nu[i] = fxns_mix.calc_mixture_viscosity(fuel,T[i],fuel.Y_0,drop['r_0'])
     # Convert viscosity to mm^2/s
     nu[i] *= 1.0e+06
 
