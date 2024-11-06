@@ -26,17 +26,17 @@ class groupContribution:
     fuel_init_data = None
     
     # GCM table data from Constantinou and Gani (num_groups,)
-    Tc1k   = None
-    Pc1k   = None
-    Vc1k   = None
-    w1k    = None
-    hv1k   = None
-    Vliq1k = None
+    Tck   = None
+    Pck   = None
+    Vck   = None
+    wk    = None
+    hvk   = None
+    Vmk = None
     cpak   = None
     cpbk   = None
     cpck   = None
     mwk    = None
-    Tb1k   = None
+    Tbk   = None
     
     # Initial composition and functional group data for fuel
     Y_0 = None  # Initial mass fraction for fuel (num_compounds,)
@@ -70,20 +70,20 @@ class groupContribution:
             ~df_gcm_properties.columns.isin(['Property', 'Units'])].to_numpy()
         
         # Table data for functional groups (num_compounds,)
-        self.Tc1k   = gcm_properties[0]  # critical temperature
-        self.Pc1k   = gcm_properties[1]  # critical pressure
-        self.Vc1k   = gcm_properties[2]  # critical volume
-        self.Tb1k   = gcm_properties[3]  # boiling temperature
-        self.Tm1k   = gcm_properties[4]  # melting point temperature
-        self.hf1k   = gcm_properties[5]  # enthalpy of formation, kJ/mol
-        self.gfc    = gcm_properties[6]  # Gibbs energy
-        self.hv1k   = gcm_properties[7]  # latent heat of vaporization, kJ/mol
-        self.w1k    = gcm_properties[8]  # accentric factor
-        self.Vliq1k = gcm_properties[9]  # liquid molar volume fraction
-        self.cpak   = gcm_properties[10] # specific heat values
-        self.cpbk   = gcm_properties[11] # specific heat values
-        self.cpck   = gcm_properties[12] # specific heat values
-        self.mwk    = gcm_properties[13] # molecular weights, g/mol
+        self.Tck  = gcm_properties[0]  # critical temperature (1)
+        self.Pck  = gcm_properties[1]  # critical pressure (bar)
+        self.Vck  = gcm_properties[2]  # critical volume (m^3/kmol)
+        self.Tbk  = gcm_properties[3]  # boiling temperature (1)
+        self.Tmk  = gcm_properties[4]  # melting point temperature (1)
+        self.hfk  = gcm_properties[5]  # enthalpy of formation, (kJ/mol)
+        self.gfc  = gcm_properties[6]  # Gibbs energy (kJ/mol)
+        self.hvk  = gcm_properties[7]  # latent heat of vaporization (kJ/mol)
+        self.wk   = gcm_properties[8]  # accentric factor (1)
+        self.Vmk  = gcm_properties[9]  # liquid molar volume fraction (m^3/kmol)
+        self.cpak = gcm_properties[10] # specific heat values (J/mol/K)
+        self.cpbk = gcm_properties[11] # specific heat values (J/mol/K)
+        self.cpck = gcm_properties[12] # specific heat values (J/mol/K)
+        self.mwk  = gcm_properties[13] # molecular weights (g/mol)
 
         # Read functional group data for fuel (num_compounds,num_groups)
         df_Nij = pd.read_excel(self.fuel_comp_desc)
@@ -101,27 +101,27 @@ class groupContribution:
         self.MW *= 1e-3 # Convert to kg/mol
         
         # T_c (critical temperature)
-        self.Tc = 181.128*np.log(np.matmul(self.Nij,self.Tc1k)) # K
+        self.Tc = 181.128*np.log(np.matmul(self.Nij,self.Tck)) # K
 
         # p_c (critical pressure)
-        self.Pc = (1.3705 + (np.matmul(self.Nij,self.Pc1k) + 0.10022)**(-2)) # bar
+        self.Pc = (1.3705 + (np.matmul(self.Nij,self.Pck) + 0.10022)**(-2)) # bar
         self.Pc *= 1e5 # Convert to Pa from bar
 
         # omega (accentric factor)
-        self.omega = 0.4085 * (np.log(np.matmul(self.Nij, self.w1k) + 1.1507)**(1 / 0.5050))
+        self.omega = 0.4085 * (np.log(np.matmul(self.Nij, self.wk) + 1.1507)**(1 / 0.5050))
 
         # T_b (boiling temperature)
-        self.Tb = 204.359*np.log( np.matmul(self.Nij,self.Tb1k)) # K
+        self.Tb = 204.359*np.log( np.matmul(self.Nij,self.Tbk)) # K
 
         # V_c (critical volume)
-        self.Vc = 1e-3*(-0.00435 + ( np.matmul(self.Nij,self.Vc1k) )) # m^3/mol
+        self.Vc = 1e-3*(-0.00435 + ( np.matmul(self.Nij,self.Vck) )) # m^3/mol
 
         # Standard heat of vaporization
-        self.Lv_stp = (6.829 + (np.matmul(self.Nij,self.hv1k)) ) * 1e3 # J/mol
+        self.Lv_stp = (6.829 + (np.matmul(self.Nij,self.hvk)) ) * 1e3 # J/mol
         self.Lv_stp = self.Lv_stp / self.MW # Convert to J/kg
 
         # Molar liquid volume at standard temperature
-        self.Vm_stp = 1e-3 * (0.01211 + ( np.matmul(self.Nij,self.Vliq1k) )) # m^3/mol
+        self.Vm_stp = 1e-3 * (0.01211 + ( np.matmul(self.Nij,self.Vmk) )) # m^3/mol
         
         # Lennard-Jones parameters for diffusion calculations (eqt. 30 in Govindaraju)
         self.epsVec = (0.7915 + 0.1693 * self.omega) * self.Tc
