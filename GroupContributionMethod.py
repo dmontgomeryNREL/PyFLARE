@@ -24,50 +24,95 @@ class groupContribution:
     num_compounds = None
     fuel_comp_desc = None
     fuel_init_data = None
-    
-    # GCM table data from Constantinou and Gani (num_groups,)
-    Tck   = None
-    Pck   = None
-    Vck   = None
-    wk    = None
-    hvk   = None
-    Vmk = None
-    cpak   = None
-    cpbk   = None
-    cpck   = None
-    mwk    = None
-    Tbk   = None
-    
+
     # Initial composition and functional group data for fuel
     Y_0 = None  # Initial mass fraction for fuel (num_compounds,)
     Nij = None  # Compound vs. group matrix (num_compounds, num_groups)
     
-    # critical properties (num_compounds,)
+    # GCM table data from Constantinou and Gani (num_groups,)
+    N_g1 = 78
+    N_g2 = 43
+    Tck  = None
+    Pck  = None
+    Vck  = None
+    Tbk  = None
+    Tmk  = None
+    hfk  = None
+    gfk  = None
+    hvk  = None
+    wk   = None
+    Vmk  = None
+    cpak = None
+    cpbk = None
+    cpck = None
+    mwk  = None
+    
+    # critical properties at standard temp (num_compounds,)
     MW     = None
     Tc     = None
     Pc     = None
     Vc     = None
-    omega  = None
     Tb     = None
-    Lv_stp = None
+    Tm     = None
+    Hf     = None
+    Gf     = None
+    Hv_stp = None
+    omega  = None
     Vm_stp = None
+    Cp_stp = None
+    Cp_B   = None
+    Cp_C   = None
+    Lv_stp = None
     
-    def __init__(self, fuel=""):
+    def __init__(self, fuel="", W = 1):
         """
         Initializes fuel-specific data and GCM table properties for the specified 
         fuel. Reads GCM table and fuel data from files.
         
         Parameters:
         fuel (str): Name of the fuel to initialize data for.
+        W (integer): Determines if first-order only (W = 0) approximation
         """
+
         self.fuel = fuel
         self.fuel_comp_desc = os.path.join(self.compDescDir, f"{fuel}.xlsx")
         self.fuel_init_data = os.path.join(self.initDataDir, f"{fuel}_init.xlsx")
+
+        # Read functional group data for fuel (num_compounds,num_groups)
+        df_Nij = pd.read_excel(self.fuel_comp_desc)
+        self.Nij = df_Nij.iloc[:, 1:].to_numpy()  
+        self.num_compounds = self.Nij.shape[0]
+        self.num_groups = self.Nij.shape[1]
+
+        # Read initial liquid composition of fuel and normalize to get massfrac
+        fuel_init_data_df = pd.read_excel(self.fuel_init_data, usecols=[1])
+        self.Y_0 = fuel_init_data_df.to_numpy().flatten().astype(float)
+        self.Y_0 /= np.sum(self.Y_0)
+
+        # Make sure fuel data is consistent:
+        if (self.num_groups < self.N_g1):
+            raise ValueError(
+                f"Insufficient fuel description:\n"
+                f"The number of columns in {self.fuel_comp_desc} is less than "
+                f"the required number of first-order groups (N_g1 = {self.N_g1})."
+                )
+        if (self.Y_0.shape[0] != self.num_compounds):
+            raise ValueError(
+                f"Insufficient fuel description:\n"
+                f"The number of compounds in {self.fuel_comp_desc} does not "
+                f"equal the number of compounds in {self.fuel_init_data}."
+                )
         
         # Read and store GCM table properties
         df_gcm_properties = pd.read_excel(self.input_table)
         gcm_properties = df_gcm_properties.loc[:, 
             ~df_gcm_properties.columns.isin(['Property', 'Units'])].to_numpy()
+        
+        # Determine if approximations include second-order contributions
+        if (W == 0 or self.num_groups < self.N_g1 + self.N_g2):
+            # Only retain first-order GCM properties
+            gcm_properties = gcm_properties[:,0:self.N_g1]
+            self.Nij = self.Nij[:,0:self.N_g1]
         
         # Table data for functional groups (num_compounds,)
         self.Tck  = gcm_properties[0]  # critical temperature (1)
@@ -76,26 +121,16 @@ class groupContribution:
         self.Tbk  = gcm_properties[3]  # boiling temperature (1)
         self.Tmk  = gcm_properties[4]  # melting point temperature (1)
         self.hfk  = gcm_properties[5]  # enthalpy of formation, (kJ/mol)
-        self.gfc  = gcm_properties[6]  # Gibbs energy (kJ/mol)
+        self.gfk  = gcm_properties[6]  # Gibbs energy (kJ/mol)
         self.hvk  = gcm_properties[7]  # latent heat of vaporization (kJ/mol)
         self.wk   = gcm_properties[8]  # accentric factor (1)
         self.Vmk  = gcm_properties[9]  # liquid molar volume fraction (m^3/kmol)
         self.cpak = gcm_properties[10] # specific heat values (J/mol/K)
         self.cpbk = gcm_properties[11] # specific heat values (J/mol/K)
         self.cpck = gcm_properties[12] # specific heat values (J/mol/K)
-        self.mwk  = gcm_properties[13] # molecular weights (g/mol)
-
-        # Read functional group data for fuel (num_compounds,num_groups)
-        df_Nij = pd.read_excel(self.fuel_comp_desc)
-        self.Nij = df_Nij.iloc[:, 1:].to_numpy()  
-        self.num_compounds = self.Nij.shape[0]
-
-        # Read initial liquid composition of fuel and normalize to get massfrac
-        fuel_init_data_df = pd.read_excel(self.fuel_init_data, usecols=[1])
-        self.Y_0 = fuel_init_data_df.to_numpy().flatten().astype(float)
-        self.Y_0 /= np.sum(self.Y_0) 
+        self.mwk  = gcm_properties[13] # molecular weights (g/mol) 
         
-        # --- compute critical properties/stp properties (num_compounds,)
+        # --- Compute critical properties at standard temp (num_compounds,)
         # Molecular weights
         self.MW = np.matmul(self.Nij,self.mwk) # g/mol
         self.MW *= 1e-3 # Convert to kg/mol
@@ -104,25 +139,48 @@ class groupContribution:
         self.Tc = 181.128*np.log(np.matmul(self.Nij,self.Tck)) # K
 
         # p_c (critical pressure)
-        self.Pc = (1.3705 + (np.matmul(self.Nij,self.Pck) + 0.10022)**(-2)) # bar
+        self.Pc = 1.3705 + (np.matmul(self.Nij,self.Pck) + 0.10022)**(-2) # bar
         self.Pc *= 1e5 # Convert to Pa from bar
 
-        # omega (accentric factor)
-        self.omega = 0.4085 * (np.log(np.matmul(self.Nij, self.wk) + 1.1507)**(1 / 0.5050))
+        # V_c (critical volume)
+        self.Vc = -0.00435 + ( np.matmul(self.Nij,self.Vck) ) # m^3/kmol
+        self.Vc *= 1e-3 # Convert to m^3/mol
 
         # T_b (boiling temperature)
         self.Tb = 204.359*np.log( np.matmul(self.Nij,self.Tbk)) # K
 
-        # V_c (critical volume)
-        self.Vc = 1e-3*(-0.00435 + ( np.matmul(self.Nij,self.Vck) )) # m^3/mol
+        # T_m (melting temperature)
+        self.Tm = 102.425*np.log( np.matmul(self.Nij,self.Tmk)) # K
 
-        # Standard heat of vaporization
-        self.Lv_stp = (6.829 + (np.matmul(self.Nij,self.hvk)) ) * 1e3 # J/mol
-        self.Lv_stp = self.Lv_stp / self.MW # Convert to J/kg
+        # H_f (enthalpy of formation)
+        self.Hf = 10.835 + np.matmul(self.Nij,self.hfk) # kJ/mol
+        self.Hf *= 1e3 # Convert to J/mol
 
-        # Molar liquid volume at standard temperature
-        self.Vm_stp = 1e-3 * (0.01211 + ( np.matmul(self.Nij,self.Vmk) )) # m^3/mol
-        
+        # G_f (Gibbs free energy)
+        self.Gf = -14.828 + np.matmul(self.Nij,self.gfk) # kJ/mol
+        self.Gf *= 1e3 # Convert to J/mol
+
+        # H_v,stp (enthalpy of vaporization at 298 K)
+        self.Hv_stp = 6.829 + (np.matmul(self.Nij,self.hvk)) # kJ/mol
+        self.Hv_stp *= 1e3 # Convert to J/mol
+
+        # omega (accentric factor)
+        self.omega = 0.4085 * np.log(np.matmul(self.Nij, self.wk) + 1.1507)**(1.0 / 0.5050)
+
+        # V_m (molar liquid volume at 298 K)
+        self.Vm_stp = 0.01211 + np.matmul(self.Nij,self.Vmk)  # m^3/kmol
+        self.Vm_stp *= 1e-3 # Convert to m^3/mol
+
+        # C_p,stp (specific heat at 298 K)
+        self.Cp_stp = np.matmul(self.Nij, self.cpak) - 19.7779 # J/mol/K
+
+        # Temperature corrections for C_p
+        self.Cp_B = np.matmul(self.Nij, self.cpbk)
+        self.Cp_C = np.matmul(self.Nij, self.cpck)
+
+        # L_v,stp (latent heat of vaporization at 298 K)
+        self.Lv_stp = self.Hv_stp / self.MW # J/kg
+
         # Lennard-Jones parameters for diffusion calculations (eqt. 30 in Govindaraju)
         self.epsVec = (0.7915 + 0.1693 * self.omega) * self.Tc
         self.SigmaVec = 1e-10 * (2.3551 - 0.0874 * self.omega) * \
@@ -147,8 +205,8 @@ class groupContribution:
         mu = np.exp(rhs) * rho 
         mu *= 1e-3 # Convert to Pa*s
         return mu 
-            
-    def Cp_stp(self, T):
+
+    def Cp(self, T):
         """
         Computes specific heat capacity at a given temperature.
         
@@ -156,13 +214,24 @@ class groupContribution:
         T (float): Temperature in Kelvin.
         
         Returns:
-        np.ndarray: Specific heat capacity in J/kg/K (shape: num_compounds,).
+        np.ndarray: Specific heat capacity in J/mol/K (shape: num_compounds,).
         """
         theta = (T - 298) / 700
-        cl = (np.matmul(self.Nij, self.cpak) - 19.7779) + \
-             (np.matmul(self.Nij, self.cpbk) + 22.5981) * theta + \
-             (np.matmul(self.Nij, self.cpck) - 10.7983) * (theta**2)
-        return cl / self.MW
+        cp = self.Cp_stp + self.Cp_B * theta + self.Cp_C * theta**2
+        return cp
+    
+    def Cl(self, T):
+        """
+        Computes liquid specific heat capacity at a given temperature.
+        
+        Parameters:
+        T (float): Temperature in Kelvin.
+        
+        Returns:
+        np.ndarray: Specific heat capacity in J/kg/K (shape: num_compounds,).
+        """
+        cp = self.Cp(T)
+        return cp / self.MW  # TODO: Why divide by MW?!?!?!
 
     def psat(self, T):
         """
@@ -205,15 +274,15 @@ class groupContribution:
         Vmi = self.Vm_stp * np.power(z_vec,phi)
         return Vmi
     
-    def enthalpy_vaporization(self, T):
+    def latent_heat_vaporization(self, T):
         """
-        Calculates the enthalpy of vaporization, adjusted for temperature.
+        Calculates the letent heat of vaporization, adjusted for temperature.
 
         Parameters:
         T (float): Temperature in Kelvin.
 
         Returns:
-        numpy.ndarray: Adjusted enthalpy of vaporization in J/mol (num_compounds,)
+        numpy.ndarray: Adjusted latent heat of vaporization in J/kg (num_compounds,)
         """
         Lvi = np.zeros_like(self.Tc)
         
