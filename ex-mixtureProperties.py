@@ -2,29 +2,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import os
-import cantera as ct
 import GroupContributionMethod as gcm
 import fxns_mixtureProperties as fxns_mix
 
 # -----------------------------------------------------------------------------
-# Calculate mixture density and viscosity of Jet A (POSF-10325) based on the 
-# properties and composition of the first order groups
+# Calculate mixture properties from the group contribution properties
 # -----------------------------------------------------------------------------
 
-# Fuel for GCM and data for validation
-fuel_name = 'posf10325'
-fuel_data = 'posf10325-GE-JetA.csv'
-
-# system temperature (C)
-T_min = -40.0
-T_max = 60.0
-
-# system pressure
-p = 1e5 # (Pa) or 1 bar
+# Fuel for GCM and data for validation (see fuelData/propertiesData for options)
+# fuel_name = 'decane', 'dodecane', 'heptane', , 'posf10325'
+fuel_name = 'dodecane'
 
 # droplet specs
 drop = {} 
-drop['d_0'] = 100*1e-6 	# initial droplet diameter (m)
+drop['d_0'] = 100*1e-6 	# initial droplet diameter (m), note: size doesn't matter
 drop['r_0'] = drop['d_0']/2.0 # initial droplet radius (m)
 
 # Get the fuel properties based on the GCM
@@ -33,15 +24,16 @@ fuel = gcm.groupContribution(fuel_name)
 # initial liquid mass fractions
 Y_li = fuel.Y_0
 
-# number of compounds
-num_compounds = fuel.num_compounds
-
-# initial droplet radius (m)
-drop['r_0'] = drop['d_0']/2.0
-
-# Get experimental or NIST data for validation
+# Get data for validation
+fuel_to_data = {
+    'heptane': ('heptane-NIST.csv', 'NIST Data'),
+    'decane': ('decane-NIST.csv', 'NIST Data'),
+    'dodecane': ('dodecane-NIST.csv', 'NIST Data'),
+    'posf10325': ('posf10325-GE-JetA.csv', 'NREL Data')
+}
+data_file, data_source = fuel_to_data.get(fuel_name)
 dataPath = os.path.join(fuel.fuelData,"propertiesData")
-data = pd.read_csv(os.path.join(dataPath,fuel_data),skiprows=[1])
+data = pd.read_csv(os.path.join(dataPath,data_file),skiprows=[1])
 T_nu_data = data.Temperature[data.Viscosity.notna()]
 nu_data = data.Viscosity.dropna()
 T_rho_data = data.Temperature[data.Density.notna()]
@@ -52,7 +44,7 @@ pv_data = data.VaporPressure.dropna()
 # Vectors for temperature (convert from C to K)
 T_rho = fxns_mix.C2K(np.linspace(min(T_rho_data),max(T_rho_data),100))
 T_nu = fxns_mix.C2K(np.linspace(min(T_nu_data),max(T_nu_data),100))
-T_pv = fxns_mix.C2K(np.linspace(min(T_pv_data),800,100))
+T_pv = fxns_mix.C2K(np.linspace(min(T_pv_data),max(T_pv_data),100))
 
 # Vectors for density, viscosity and vapor pressure
 rho = np.zeros_like(T_rho)
@@ -80,10 +72,6 @@ for i in range(0,len(T_pv)):
     # Convert vapor pressure to kPa
     pv[i] *= 1.0e-03
 
-# Get experimental or NIST data for validation
-dataPath = os.path.join(fuel.fuelData,"propertiesData")
-data = pd.read_csv(os.path.join(dataPath,fuel_data),skiprows=[1])
-
 # Plot parameters
 fsize = 26
 ticksize = 24
@@ -94,7 +82,7 @@ marker_size = 150
 plt.figure(figsize=(12.3,8))
 plt.plot(fxns_mix.K2C(T_nu), nu, '-k',label='Model Prediction', linewidth=line_thickness)
 plt.scatter(T_nu_data, nu_data, 
-            label="NREL Experimental Data", facecolors='tab:orange', s=marker_size)
+            label=data_source, facecolors='tab:orange', s=marker_size)
 plt.xlabel('Temperature ($^\circ$C)', fontsize=fsize)
 plt.ylabel('Viscosity (mm$^2$/s)', fontsize=fsize)
 plt.xlim([min(T_nu_data), max(T_nu_data)])
@@ -106,7 +94,7 @@ plt.legend(fontsize=fsize)
 plt.figure(figsize=(12.3,8))
 plt.plot(fxns_mix.K2C(T_rho), rho, '-k',label='Model Prediction', linewidth=line_thickness)
 plt.scatter(T_rho_data, rho_data, 
-            label="NREL Experimental Data", facecolors='tab:orange', s=marker_size)
+            label=data_source, facecolors='tab:orange', s=marker_size)
 plt.xlabel('Temperature ($^\circ$C)', fontsize=fsize)
 plt.ylabel('Density (g/cm$^3$)', fontsize=fsize)
 plt.xlim([min(T_rho_data), max(T_rho_data)])
@@ -118,7 +106,7 @@ plt.legend(fontsize=fsize)
 plt.figure(figsize=(12.3,8))
 plt.plot(fxns_mix.K2C(T_pv), pv, '-k',label='Model Prediction', linewidth=line_thickness)
 plt.scatter(T_pv_data, pv_data, 
-            label="NREL Experimental Data", facecolors='tab:orange', s=marker_size)
+            label=data_source, facecolors='tab:orange', s=marker_size)
 plt.xlabel('Temperature ($^\circ$C)', fontsize=fsize)
 plt.ylabel('Vapor Pressure (kPa)', fontsize=fsize)
 plt.xlim([min(T_pv_data), max(T_pv_data)])
