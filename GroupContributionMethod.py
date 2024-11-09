@@ -233,7 +233,7 @@ class groupContribution:
         cp = self.Cp(T)
         return cp / self.MW 
 
-    def psat(self, T, correlation = 'Ambrose-Walton'):
+    def psat(self, T, correlation = 'Lee-Kesler'):
         """
         Computes the saturated vapor pressure.
         
@@ -246,11 +246,8 @@ class groupContribution:
         """
         Tr = T / self.Tc
 
-        if (correlation.casefold() == 'Lee-Kesler'):
-            f0 = 5.92714 - (6.09648 / Tr) - 1.28862 * np.log(Tr) + 0.169347 * (Tr ** 6)
-            f1 = 15.2518 - (15.6875 / Tr) - 13.4721 * np.log(Tr) + 0.43577 * (Tr ** 6)
-            rhs = np.exp((f0 + self.omega * f1))
-        else:
+        if (correlation.casefold() == 'Ambrose-Walton'.casefold()):
+            # May cause trouble at high temperatures
             tau = 1 - Tr
             f0 = - 5.97616*tau + 1.29874*tau**1.5 - 0.60394*tau**2.5 - 1.06841*tau**5.0
             f0 /= Tr
@@ -259,6 +256,11 @@ class groupContribution:
             f2 = - 0.64771*tau + 2.41539*tau**1.5 - 4.26979*tau**2.5 - 3.25259*tau**5.0
             f2 /= Tr
             rhs = np.exp((f0 + self.omega * f1 + self.omega**2 * f2**2))
+
+        else: # Default correlation is Lee-Kesler
+            f0 = 5.92714 - (6.09648 / Tr) - 1.28862 * np.log(Tr) + 0.169347 * (Tr ** 6)
+            f1 = 15.2518 - (15.6875 / Tr) - 13.4721 * np.log(Tr) + 0.43577 * (Tr ** 6)
+            rhs = np.exp((f0 + self.omega * f1))
             
         psat = self.Pc * rhs 
         return psat

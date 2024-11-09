@@ -52,7 +52,7 @@ pv_data = data.VaporPressure.dropna()
 # Vectors for temperature (convert from C to K)
 T_rho = fxns_mix.C2K(np.linspace(min(T_rho_data),max(T_rho_data),100))
 T_nu = fxns_mix.C2K(np.linspace(min(T_nu_data),max(T_nu_data),100))
-T_pv = fxns_mix.C2K(np.linspace(min(T_pv_data),max(T_pv_data),100))
+T_pv = fxns_mix.C2K(np.linspace(min(T_pv_data),800,100))
 
 # Vectors for density, viscosity and vapor pressure
 rho = np.zeros_like(T_rho)
@@ -76,7 +76,7 @@ for i in range(0,len(T_nu)):
 
 for i in range(0,len(T_pv)): 
     # Mixture vapor pressure (returns pv in Pa)
-    pv[i] = fxns_mix.calc_vapor_pressure(fuel,T_pv[i],fuel.Y_0,drop['r_0'],'Ambrose-Walton')
+    pv[i] = fxns_mix.calc_vapor_pressure(fuel,T_pv[i],fuel.Y_0,drop['r_0'])
     # Convert vapor pressure to kPa
     pv[i] *= 1.0e-03
 

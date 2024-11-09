@@ -101,7 +101,7 @@ def calc_mixture_viscosity(fuel, T, Yi, radius, correlation='Kendall-Monroe'):
     
     return nu
 
-def calc_vapor_pressure(fuel, T, Yli, radius, correlation = 'Ambrose-Walton'):
+def calc_vapor_pressure(fuel, T, Yli, radius, correlation = 'Lee-Kesler'):
     """
     Calculate the vapor pressure the fuel mixture.
 
@@ -124,10 +124,10 @@ def calc_vapor_pressure(fuel, T, Yli, radius, correlation = 'Ambrose-Walton'):
     # Group mole fraction for each compound
     Xi = dropletFxns.moleFracVec(massVec,MW)
 
-    # Saturated vapor pressure (Pa)
+    # Saturated vapor pressure for each compound (Pa)
     p_sati = fuel.psat(T,correlation)
 
-    # Vapor pressure
+    # Mixture vapor pressure via Raoult's law
     p_v = p_sati @ Xi
     
     return p_v
