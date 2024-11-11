@@ -39,7 +39,7 @@ def droplet_radius_from_mass(fuel, massVector, T):
     # Calculate and return the radius
     return (3 * vol / (4 * np.pi))**(1/3) if vol > 0 else 0.0
 
-def drop_volume(radius):
+def droplet_volume(radius):
     """
     Compute the volume of a droplet assuming it is spherical.
 
@@ -62,7 +62,7 @@ def droplet_density(massVector, radius):
     Returns:
     float: Density of the droplet in kg/m^3.
     """
-    return np.sum(massVector) / drop_volume(radius)  # kg/m^3
+    return np.sum(massVector) / droplet_volume(radius)  # kg/m^3
 
 def massVector(fuel, radius, Yi, T):
     """
@@ -78,7 +78,7 @@ def massVector(fuel, radius, Yi, T):
     np.ndarray: Mass of each compound in kg (shape: num_compounds,).
     """
     MW = fuel.MW
-    volume = drop_volume(radius)
+    volume = droplet_volume(radius)
     
     # Calculate mass vector based on volume and mole fractions
     if volume > 0:

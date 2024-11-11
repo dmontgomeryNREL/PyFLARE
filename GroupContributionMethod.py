@@ -186,7 +186,32 @@ class groupContribution:
         self.SigmaVec = 1e-10 * (2.3551 - 0.0874 * self.omega) * \
                         ((1e5 * self.Tc / self.Pc)**(1 / 3))
     
-    def dynamic_viscosity(self, T, rho):
+    def viscosity_kinematic(self, T):
+        """
+        Calculate the viscosity of individual components in the fuel at a given 
+        temperature using Dutt's equation (4.23) in Viscosity of Liquids.
+
+        Parameters:
+        fuel: Object of the groupContribution class containing properties.
+        T (float): Temperature in Kelvin.
+
+        Returns:
+        np.array: Viscosity of each component in m^2/s.
+        """
+        # Convert temperature to Celsius
+        T_cels = K2C(T)  
+        Tb_cels = K2C(self.Tb)
+
+        # RHS of Dutt's equation (4.23) in Viscosity of Liquids 
+        rhs = -3.0171 + (442.78 + 1.6452 * Tb_cels) / (T_cels + 239 - 0.19 * Tb_cels)
+        nu_i = np.exp(rhs)  # Viscosity in mm^2/s 
+
+        # Convert to SI (m^2/s)
+        nu_i *= 1e-6
+
+        return nu_i
+    
+    def viscosity_dynamic(self, T, rho):
         """
         Calculates liquid dynamic viscosity based on droplet temperature and 
         density using Dutt's Equation (4.23) in "Viscosity of Liquids".
@@ -198,12 +223,8 @@ class groupContribution:
         Returns:
         np.ndarray: Dynamic viscosity in Pa*s (shape: num_compounds,).
         """
-        T = self.K2C(T) # Convert to celsius
-        rho *= 1e-3 # Convert from kg/m^3 to g/cm^3
-        rhs = -3.0171 + (442.78 + 1.6452 * (self.Tb - 273)) / \
-              (T + (239 - 0.19 * (self.Tb - 273)))
-        mu = np.exp(rhs) * rho 
-        mu *= 1e-3 # Convert to Pa*s
+        nu = self.viscosity_kinematic(T)
+        mu = nu * rho 
         return mu 
 
     def Cp(self, T):
@@ -348,3 +369,28 @@ class groupContribution:
         r = (1 / p) * 1e5 * ((3.03 - (0.98 / (MWa ** 0.5))) * 1e-27 * (Tin ** 1.5)) / ((MWa ** 0.5) * (sigmaAB ** 2) * omegaD)
 
         return r
+
+# Public Utility functions
+def C2K(T):
+        """
+        Convert temperature from Celsius to Kelvin.
+
+        Parameters:
+        T (float or np.array): Temperature in Celsius.
+
+        Returns:
+        float or np.array: Temperature in Kelvin.
+        """
+        return T + 273.15
+
+def K2C(T):
+    """
+    Convert temperature from Kelvin to Celsius.
+
+    Parameters:
+    T (float or np.array): Temperature in Kelvin.
+
+    Returns:
+    float or np.array: Temperature in Celsius.
+    """
+    return T - 273.15

@@ -10,8 +10,8 @@ import fxns_mixtureProperties as fxns_mix
 # -----------------------------------------------------------------------------
 
 # Fuel for GCM and data for validation (see fuelData/propertiesData for options)
-# fuel_name = 'decane', 'dodecane', 'heptane', , 'posf10325'
-fuel_name = 'dodecane'
+# fuel_name = 'decane', 'dodecane', 'heptane', 'posf10325'
+fuel_name = 'decane'
 
 # droplet specs
 drop = {} 
@@ -42,9 +42,9 @@ T_pv_data = data.Temperature[data.VaporPressure.notna()]
 pv_data = data.VaporPressure.dropna()
 
 # Vectors for temperature (convert from C to K)
-T_rho = fxns_mix.C2K(np.linspace(min(T_rho_data),max(T_rho_data),100))
-T_nu = fxns_mix.C2K(np.linspace(min(T_nu_data),max(T_nu_data),100))
-T_pv = fxns_mix.C2K(np.linspace(min(T_pv_data),max(T_pv_data),100))
+T_rho = gcm.C2K(np.linspace(min(T_rho_data),max(T_rho_data),100))
+T_nu = gcm.C2K(np.linspace(min(T_nu_data),max(T_nu_data),100))
+T_pv = gcm.C2K(np.linspace(min(T_pv_data),max(T_pv_data),100))
 
 # Vectors for density, viscosity and vapor pressure
 rho = np.zeros_like(T_rho)
@@ -56,19 +56,19 @@ colors = ['','tab:purple','tab:blue','tab:red','tab:orange','tab:green']
 
 for i in range(0,len(T_rho)): 
     # Mixture density (returns rho in kg/m^3)
-    rho[i] = fxns_mix.calc_mixture_density(fuel,T_rho[i],fuel.Y_0)
+    rho[i] = fxns_mix.mixture_density(fuel,T_rho[i],fuel.Y_0)
     # Convert density to CGS (g/cm^3)
     rho[i] *= 1.0e-03 
 
 for i in range(0,len(T_nu)): 
     # Mixture viscosity (returns nu in m^2/s)
-    nu[i] = fxns_mix.calc_mixture_viscosity(fuel,T_nu[i],fuel.Y_0,drop['r_0'])
+    nu[i] = fxns_mix.mixture_viscosity(fuel,T_nu[i],fuel.Y_0,drop['r_0'])
     # Convert viscosity to mm^2/s
     nu[i] *= 1.0e+06
 
 for i in range(0,len(T_pv)): 
     # Mixture vapor pressure (returns pv in Pa)
-    pv[i] = fxns_mix.calc_vapor_pressure(fuel,T_pv[i],fuel.Y_0,drop['r_0'])
+    pv[i] = fxns_mix.mixture_vapor_pressure(fuel,T_pv[i],fuel.Y_0,drop['r_0'])
     # Convert vapor pressure to kPa
     pv[i] *= 1.0e-03
 
@@ -80,7 +80,7 @@ marker_size = 150
 
 # Plot mixture viscosity vs. Temp
 plt.figure(figsize=(12.3,8))
-plt.plot(fxns_mix.K2C(T_nu), nu, '-k',label='Model Prediction', linewidth=line_thickness)
+plt.plot(gcm.K2C(T_nu), nu, '-k',label='Model Prediction', linewidth=line_thickness)
 plt.scatter(T_nu_data, nu_data, 
             label=data_source, facecolors='tab:orange', s=marker_size)
 plt.xlabel('Temperature ($^\circ$C)', fontsize=fsize)
@@ -92,7 +92,7 @@ plt.legend(fontsize=fsize)
 
 # Plot mixture density vs. Temp
 plt.figure(figsize=(12.3,8))
-plt.plot(fxns_mix.K2C(T_rho), rho, '-k',label='Model Prediction', linewidth=line_thickness)
+plt.plot(gcm.K2C(T_rho), rho, '-k',label='Model Prediction', linewidth=line_thickness)
 plt.scatter(T_rho_data, rho_data, 
             label=data_source, facecolors='tab:orange', s=marker_size)
 plt.xlabel('Temperature ($^\circ$C)', fontsize=fsize)
@@ -104,7 +104,7 @@ plt.legend(fontsize=fsize)
 
 # Plot mixture vapor pressure vs. Temp
 plt.figure(figsize=(12.3,8))
-plt.plot(fxns_mix.K2C(T_pv), pv, '-k',label='Model Prediction', linewidth=line_thickness)
+plt.plot(gcm.K2C(T_pv), pv, '-k',label='Model Prediction', linewidth=line_thickness)
 plt.scatter(T_pv_data, pv_data, 
             label=data_source, facecolors='tab:orange', s=marker_size)
 plt.xlabel('Temperature ($^\circ$C)', fontsize=fsize)
