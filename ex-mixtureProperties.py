@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 import GroupContributionMethod as gcm
-import fxns_mixtureProperties as fxns_mix
+import fxns_singleDropletProperties as fxns_drop
 
 # -----------------------------------------------------------------------------
 # Calculate mixture properties from the group contribution properties
@@ -34,6 +34,8 @@ fuel_to_data = {
 data_file, data_source = fuel_to_data.get(fuel_name)
 dataPath = os.path.join(fuel.fuelData,"propertiesData")
 data = pd.read_csv(os.path.join(dataPath,data_file),skiprows=[1])
+
+# Seperate properties and associated temperatures from data
 T_nu_data = data.Temperature[data.Viscosity.notna()]
 nu_data = data.Viscosity.dropna()
 T_rho_data = data.Temperature[data.Density.notna()]
@@ -51,28 +53,29 @@ rho = np.zeros_like(T_rho)
 nu = np.zeros_like(T_nu)
 pv = np.zeros_like(T_pv)
 
-# Colors for plotting
-colors = ['','tab:purple','tab:blue','tab:red','tab:orange','tab:green']
-
 for i in range(0,len(T_rho)): 
     # Mixture density (returns rho in kg/m^3)
-    rho[i] = fxns_mix.mixture_density(fuel,T_rho[i],fuel.Y_0)
+    rho[i] = fuel.mixture_density(fuel.Y_0,T_rho[i])
     # Convert density to CGS (g/cm^3)
     rho[i] *= 1.0e-03 
 
 for i in range(0,len(T_nu)): 
+    # Mass of the droplet at current temp
+    mass = fxns_drop.massVector(fuel, drop['r_0'], Y_li, T_nu[i])
     # Mixture viscosity (returns nu in m^2/s)
-    nu[i] = fxns_mix.mixture_viscosity(fuel,T_nu[i],fuel.Y_0,drop['r_0'])
+    nu[i] = fuel.mixture_kinematic_viscosity(mass, T_nu[i])
     # Convert viscosity to mm^2/s
     nu[i] *= 1.0e+06
 
 for i in range(0,len(T_pv)): 
+    # Mass of the droplet at current temp
+    mass = fxns_drop.massVector(fuel, drop['r_0'], Y_li, T_pv[i])
     # Mixture vapor pressure (returns pv in Pa)
-    pv[i] = fxns_mix.mixture_vapor_pressure(fuel,T_pv[i],fuel.Y_0,drop['r_0'])
+    pv[i] = fuel.mixture_vapor_pressure(mass,T_pv[i])
     # Convert vapor pressure to kPa
     pv[i] *= 1.0e-03
 
-# Plot parameters
+# Plotting parameters
 fsize = 26
 ticksize = 24
 line_thickness = 5

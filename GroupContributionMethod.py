@@ -27,6 +27,7 @@ class groupContribution:
 
     # Initial composition and functional group data for fuel
     Y_0 = None  # Initial mass fraction for fuel (num_compounds,)
+    X_0 = None  # Initial mole fraction for fuel (num_compounds,)
     Nij = None  # Compound vs. group matrix (num_compounds, num_groups)
     
     # GCM table data from Constantinou and Gani (num_groups,)
@@ -185,7 +186,51 @@ class groupContribution:
         self.epsVec = (0.7915 + 0.1693 * self.omega) * self.Tc
         self.SigmaVec = 1e-10 * (2.3551 - 0.0874 * self.omega) * \
                         ((1e5 * self.Tc / self.Pc)**(1 / 3))
+        
+    # -------------------------------------------------------------------------
+    # Member functions
+    # -------------------------------------------------------------------------
+    def mass_frac(self, mass):
+        """
+        Calculate the mass fractions from the mass of each component.
+        
+        Parameters:
+        mass (np.ndarray): Mass of each compound (shape: num_compounds,).
+
+        Returns:
+        Yi np.ndarray: Mass fractions of the compounds (shape: num_compounds,).
+        """        
+        # Normalize to get group mole fractions
+        total_mass = np.sum(mass)
+        if total_mass != 0:
+            Yi = mass / total_mass
+        else:
+            Yi = np.zeros_like(self.MW)
+        
+        return Yi
     
+    def mole_frac(self, mass):
+        """
+        Calculate the mole fractions from the mass of each component.
+        
+        Parameters:
+        mass (np.ndarray): Mass of each compound (shape: num_compounds,).
+
+        Returns:
+        Xi np.ndarray: Molar fractions of the compounds (shape: num_compounds,).
+        """
+        # Calculate the number of moles for each compound
+        num_mole = mass / self.MW
+        
+        # Normalize to get group mole fractions
+        total_moles = np.sum(num_mole)
+        if total_moles != 0:
+            Xi = num_mole / total_moles
+        else:
+            Xi = np.zeros_like(self.MW)
+        
+        return Xi
+
     def viscosity_kinematic(self, T):
         """
         Calculate the viscosity of individual components in the fuel at a given 
@@ -211,14 +256,15 @@ class groupContribution:
 
         return nu_i
     
-    def viscosity_dynamic(self, T, rho):
+    def viscosity_dynamic(self, rho, T):
         """
         Calculates liquid dynamic viscosity based on droplet temperature and 
         density using Dutt's Equation (4.23) in "Viscosity of Liquids".
         
         Parameters:
+        rho (np.ndarray): Density of each component drop in kg/m^3.
         T (float): Temperature in Kelvin.
-        rho_drop (float): Density drop in kg/m^3.
+        
         
         Returns:
         np.ndarray: Dynamic viscosity in Pa*s (shape: num_compounds,).
@@ -317,7 +363,7 @@ class groupContribution:
         T (float): Temperature in Kelvin.
 
         Returns:
-        numpy.ndarray: Adjusted latent heat of vaporization in J/kg (num_compounds,)
+        np.ndarray: Adjusted latent heat of vaporization in J/kg (num_compounds,)
         """
         Lvi = np.zeros_like(self.Tc)
         
@@ -369,8 +415,80 @@ class groupContribution:
         r = (1 / p) * 1e5 * ((3.03 - (0.98 / (MWa ** 0.5))) * 1e-27 * (Tin ** 1.5)) / ((MWa ** 0.5) * (sigmaAB ** 2) * omegaD)
 
         return r
+    
+    def mixture_density(self, Yi, T):
+        """
+        Calculate the mixture density at a given temperature.
 
-# Public Utility functions
+        Parameters:
+        Yi (np.ndarray): Mass fractions of each compound (shape: num_compounds,).
+        T (float): Temperature in Kelvin.
+
+        Returns:
+        float: Mixture density in kg/m^3.
+        """
+        MW = self.MW   # Molecular weights of each component (kg/mol)
+        Vmi = self.molar_liquid_vol(T)  # Molar volume of each component (m^3/mol)
+
+        # Calculate density (kg/m^3)
+        rho = (MW @ Yi) / (Vmi @ Yi)
+
+        return rho
+
+    def mixture_kinematic_viscosity(self, mass, T, correlation='Kendall-Monroe'):
+        """
+        Calculate the viscosity of the mixture at a given temperature.
+
+        Parameters:
+        mass (np.ndarray): Mass of each compound of mixture (shape: num_compounds,).
+        T (float): Temperature in Kelvin.
+        correlation (str, optional): Mixing model "Kendall-Monroe", "Arrhenius". 
+
+        Returns:
+        float: Mixture viscosity in mm^2/s.
+        """
+        nu_i = self.viscosity_kinematic(T)  # Viscosities of individual components
+
+        # Calculate group mole fractions for each species
+        Xi = self.mole_frac(mass)
+        
+        if (correlation.casefold() == 'Arrhenius'.casefold()):
+            # Arrhenius mixing correlation
+            nu = np.exp(np.sum(Xi * np.log(nu_i)))
+        else:
+            # Default: Kendall-Monroe mixing correlation
+            nu = np.sum(Xi * (nu_i ** (1.0 / 3.0))) ** (3.0)
+            
+        
+        return nu
+
+    def mixture_vapor_pressure(self, mass, T, correlation = 'Lee-Kesler'):
+        """
+        Calculate the vapor pressure the mixture.
+
+        Parameters:
+        mass (np.ndarray): Mass of each compound of mixture (shape: num_compounds,).
+        T (float): Temperature in Kelvin. 
+        correlation (str, optional): "Ambrose-Walton" or "Lee-Kesler". 
+
+        Returns:
+        float: vapor pressure in Pa.
+        """
+        
+        # Group mole fraction for each compound
+        Xi = self.mole_frac(mass)
+
+        # Saturated vapor pressure for each compound (Pa)
+        p_sati = self.psat(T,correlation)
+
+        # Mixture vapor pressure via Raoult's law
+        p_v = p_sati @ Xi
+        
+        return p_v
+
+# -----------------------------------------------------------------------------
+# Utility functions
+# -----------------------------------------------------------------------------
 def C2K(T):
         """
         Convert temperature from Celsius to Kelvin.
