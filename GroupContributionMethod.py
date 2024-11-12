@@ -26,9 +26,8 @@ class groupContribution:
     fuel_init_data = None
 
     # Initial composition and functional group data for fuel
-    Y_0 = None  # Initial mass fraction for fuel (num_compounds,)
-    X_0 = None  # Initial mole fraction for fuel (num_compounds,)
-    Nij = None  # Compound vs. group matrix (num_compounds, num_groups)
+    Y_0 = None    # Initial mass fraction for fuel (num_compounds,)
+    Nij = None    # Compound vs. group matrix (num_compounds, num_groups)
     
     # GCM table data from Constantinou and Gani (num_groups,)
     N_g1 = 78
@@ -85,7 +84,7 @@ class groupContribution:
         self.num_compounds = self.Nij.shape[0]
         self.num_groups = self.Nij.shape[1]
 
-        # Read initial liquid composition of fuel and normalize to get massfrac
+        # Read initial liquid composition of fuel and normalize to get mass frac
         fuel_init_data_df = pd.read_excel(self.fuel_init_data, usecols=[1])
         self.Y_0 = fuel_init_data_df.to_numpy().flatten().astype(float)
         self.Y_0 /= np.sum(self.Y_0)
@@ -437,7 +436,7 @@ class groupContribution:
 
     def mixture_kinematic_viscosity(self, mass, T, correlation='Kendall-Monroe'):
         """
-        Calculate the viscosity of the mixture at a given temperature.
+        Calculate the kinematic viscosity of the mixture at a given temperature.
 
         Parameters:
         mass (np.ndarray): Mass of each compound of mixture (shape: num_compounds,).
@@ -461,6 +460,24 @@ class groupContribution:
             
         
         return nu
+    
+    def mixture_dynamic_viscosity(self, mass, T, correlation='Kendall-Monroe'):
+        """
+        Calculate the dynamic viscosity of the mixture at a given temperature.
+
+        Parameters:
+        mass (np.ndarray): Mass of each compound of mixture (shape: num_compounds,).
+        T (float): Temperature in Kelvin.
+        correlation (str, optional): Mixing model "Kendall-Monroe", "Arrhenius". 
+
+        Returns:
+        float: Mixture viscosity in Pa*s.
+        """
+        nu = self.mixture_dynamic_viscosity(mass, T, correlation)
+        Yi = self.mass_frac(mass)
+        rho = self.mixture_density(Yi, T)            
+        
+        return rho * nu
 
     def mixture_vapor_pressure(self, mass, T, correlation = 'Lee-Kesler'):
         """
