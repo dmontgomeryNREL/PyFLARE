@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 import GroupContributionMethod as gcm
-import fxns_singleDropletProperties as fxns_drop
 
 # -----------------------------------------------------------------------------
 # Calculate mixture properties from the group contribution properties
@@ -17,6 +16,9 @@ fuel_name = 'decane'
 drop = {} 
 drop['d_0'] = 100*1e-6 	# initial droplet diameter (m), note: size doesn't matter
 drop['r_0'] = drop['d_0']/2.0 # initial droplet radius (m)
+drop['V_0'] = 4.0 / 3.0 * np.pi * drop['r_0'] ** 3 # initial droplet volume
+def drop_mass(fuel,Yi,T):
+    return drop['V_0'] / (fuel.molar_liquid_vol(T) @ Yi) * Yi * fuel.MW # (kg)
 
 # Get the fuel properties based on the GCM
 fuel = gcm.groupContribution(fuel_name)
@@ -61,7 +63,7 @@ for i in range(0,len(T_rho)):
 
 for i in range(0,len(T_nu)): 
     # Mass of the droplet at current temp
-    mass = fxns_drop.massVector(fuel, drop['r_0'], Y_li, T_nu[i])
+    mass = drop_mass(fuel, Y_li, T_nu[i])
     # Mixture viscosity (returns nu in m^2/s)
     nu[i] = fuel.mixture_kinematic_viscosity(mass, T_nu[i])
     # Convert viscosity to mm^2/s
@@ -69,7 +71,7 @@ for i in range(0,len(T_nu)):
 
 for i in range(0,len(T_pv)): 
     # Mass of the droplet at current temp
-    mass = fxns_drop.massVector(fuel, drop['r_0'], Y_li, T_pv[i])
+    mass = drop_mass(fuel, Y_li, T_pv[i])
     # Mixture vapor pressure (returns pv in Pa)
     pv[i] = fuel.mixture_vapor_pressure(mass,T_pv[i])
     # Convert vapor pressure to kPa
