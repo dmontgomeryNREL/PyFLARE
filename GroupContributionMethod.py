@@ -4,29 +4,29 @@ import os
 
 class groupContribution:
     """
-    Class for handling group contribution calculations, including initialization 
-    of fuel-specific data and properties from Constantinou and Gani's GCM table.
+    Class for handling group contribution calculations of thermodynamic properties
+    and mixture properties.
     """
     
     # Paths to input directories
     GCM_PATH = os.path.dirname(os.path.abspath(__file__))
     gcmTableDir = os.path.join(GCM_PATH, 'gcmTableData')
-    fuelData = os.path.join(GCM_PATH, 'fuelData')
-    compDescDir = os.path.join(fuelData, 'compoundDescriptions')
-    initDataDir = os.path.join(fuelData, 'initData')
+    mixtureData = os.path.join(GCM_PATH, 'mixtureData')
+    compDescDir = os.path.join(mixtureData, 'compoundDescriptions')
+    initDataDir = os.path.join(mixtureData, 'initData')
 
     # Default GCM table name
     input_table_name = 'gcmTable.xlsx'
     input_table = os.path.join(gcmTableDir, input_table_name)
 
-    # Class-level variables to hold fuel-specific data and GCM table properties
-    fuel = ''
+    # Class-level variables to hold mixture-specific data and GCM table properties
+    name = ''
     num_compounds = None
-    fuel_comp_desc = None
-    fuel_init_data = None
+    mix_comp_desc = None
+    mix_init_data = None
 
-    # Initial composition and functional group data for fuel
-    Y_0 = None    # Initial mass fraction for fuel (num_compounds,)
+    # Initial composition and functional group data for mixture
+    Y_0 = None    # Initial mass fraction for mixture (num_compounds,)
     Nij = None    # Compound vs. group matrix (num_compounds, num_groups)
     
     # GCM table data from Constantinou and Gani (num_groups,)
@@ -64,43 +64,43 @@ class groupContribution:
     Cp_C   = None
     Lv_stp = None
     
-    def __init__(self, fuel="", W = 1):
+    def __init__(self, name="", W = 1):
         """
-        Initializes fuel-specific data and GCM properties for the specified 
-        fuel. Reads GCM table and fuel data from files.
+        Initializes mixture-specific data and GCM properties for the specified 
+        mixture. Reads GCM table and mixture data from files.
         
         Parameters:
-        fuel (str): Name of the fuel to initialize data for.
+        name (str): Name of the mixture to initialize data for.
         W (int): Determines if first-order only (W = 0) approximation
         """
 
-        self.fuel = fuel
-        self.fuel_comp_desc = os.path.join(self.compDescDir, f"{fuel}.xlsx")
-        self.fuel_init_data = os.path.join(self.initDataDir, f"{fuel}_init.xlsx")
+        self.name = name
+        self.mix_comp_desc = os.path.join(self.compDescDir, f"{name}.xlsx")
+        self.mix_init_data = os.path.join(self.initDataDir, f"{name}_init.xlsx")
 
-        # Read functional group data for fuel (num_compounds,num_groups)
-        df_Nij = pd.read_excel(self.fuel_comp_desc)
+        # Read functional group data for mixture (num_compounds,num_groups)
+        df_Nij = pd.read_excel(self.mix_comp_desc)
         self.Nij = df_Nij.iloc[:, 1:].to_numpy()  
         self.num_compounds = self.Nij.shape[0]
         self.num_groups = self.Nij.shape[1]
 
-        # Read initial liquid composition of fuel and normalize to get mass frac
-        fuel_init_data_df = pd.read_excel(self.fuel_init_data, usecols=[1])
-        self.Y_0 = fuel_init_data_df.to_numpy().flatten().astype(float)
+        # Read initial liquid composition of mixture and normalize to get mass frac
+        mix_init_data_df = pd.read_excel(self.mix_init_data, usecols=[1])
+        self.Y_0 = mix_init_data_df.to_numpy().flatten().astype(float)
         self.Y_0 /= np.sum(self.Y_0)
 
-        # Make sure fuel data is consistent:
+        # Make sure mixture data is consistent:
         if (self.num_groups < self.N_g1):
             raise ValueError(
-                f"Insufficient fuel description:\n"
-                f"The number of columns in {self.fuel_comp_desc} is less than "
+                f"Insufficient mixture description:\n"
+                f"The number of columns in {self.mix_comp_desc} is less than "
                 f"the required number of first-order groups (N_g1 = {self.N_g1})."
                 )
         if (self.Y_0.shape[0] != self.num_compounds):
             raise ValueError(
-                f"Insufficient fuel description:\n"
-                f"The number of compounds in {self.fuel_comp_desc} does not "
-                f"equal the number of compounds in {self.fuel_init_data}."
+                f"Insufficient mixture description:\n"
+                f"The number of compounds in {self.mix_comp_desc} does not "
+                f"equal the number of compounds in {self.mix_init_data}."
                 )
         
         # Read and store GCM table properties
@@ -232,11 +232,10 @@ class groupContribution:
 
     def viscosity_kinematic(self, T):
         """
-        Calculate the viscosity of individual components in the fuel at a given 
+        Calculate the viscosity of individual components in the mixture at a given 
         temperature using Dutt's equation (4.23) in Viscosity of Liquids.
 
         Parameters:
-        fuel: Object of the groupContribution class containing properties.
         T (float): Temperature in Kelvin.
 
         Returns:

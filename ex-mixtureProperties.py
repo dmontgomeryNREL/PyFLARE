@@ -8,7 +8,7 @@ import GroupContributionMethod as gcm
 # Calculate mixture properties from the group contribution properties
 # -----------------------------------------------------------------------------
 
-# Fuel for GCM and data for validation (see fuelData/propertiesData for options)
+# Fuel for GCM and data for validation (see mixtureData/propertiesData for options)
 # fuel_name = 'decane', 'dodecane', 'heptane', 'posf10325'
 fuel_name = 'decane'
 
@@ -34,7 +34,7 @@ fuel_to_data = {
     'posf10325': ('posf10325-GE-JetA.csv', 'NREL Data')
 }
 data_file, data_source = fuel_to_data.get(fuel_name)
-dataPath = os.path.join(fuel.fuelData,"propertiesData")
+dataPath = os.path.join(fuel.mixtureData,"propertiesData")
 data = pd.read_csv(os.path.join(dataPath,data_file),skiprows=[1])
 
 # Seperate properties and associated temperatures from data
