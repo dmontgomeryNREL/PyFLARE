@@ -5,8 +5,7 @@ Welcome to GCM-Python's Documentation
    :maxdepth: 2
    :caption: Contents:
 
-   introduction
-   gcm_properties
+   groupcontribution
 
 Indices and tables
 ==================
