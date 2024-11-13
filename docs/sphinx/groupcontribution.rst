@@ -10,8 +10,9 @@ This GCM-Python code was developed with SAF research in mind. It builds on `Pava
 Table of GCM properties
 -----------------------
 
-.. table:: Properties of the *i-th* component in a mixture. The subscript *stp* denotes a standard pressure assumption.
+.. table:: GCM properties of the *i-th* component in a mixture. The subscript *stp* denotes a standard pressure assumption.
    :widths: auto
+   :align: center
 
    ==========================  =====================  ===========================================  ====================  ===========================================================
    Property                    Units                  Group Contributions                          Units                 Description
@@ -62,12 +63,31 @@ The properties of each compound in a mixture can be calculated as the sum of con
 Equations for individual compound correlations
 ----------------------------------------------
 
-This section presents correlations for physical properties that leverage the individual compound properties defined in :ref:`eq-GCM-properties`.  These correlations make it possible to evaluate physical properties at non-standard temperatures and pressures, given that group contribution properties are only defined at standard conditions. The :ref:`tab-dimensionless-qtys` are used throughout this section for each compound *i*.
+This section presents correlations for physical properties that leverage the individual compound properties defined in :ref:`eq-GCM-properties`.  These correlations make it possible to evaluate physical properties at non-standard temperatures and pressures, given that group contribution properties are only defined at standard conditions. The :ref:`tab-dimensionless-qtys` are used throughout this section for each compound *i*, provided :math:`T` in :math:`^{\circ}` K unless noted otherwise.
+
+.. _tab-correlation-qtys:
+
+.. table:: Derived quantities and temperature corrections
+   :widths: auto
+   :align: center
+
+   ==========================  =====================  ===============================================================
+   Property                    Units                  Description
+   ==========================  =====================  ===============================================================
+   :math:`\nu_i`               m\ :sup:`2`\ /s        Kinematic viscosity\ :footcite:p:`viswanath_viscosity_2007`.
+   :math:`L_{v,stp,i}`         J/kg                   Latent heat of vaporization at 298 K\ :footcite:p:`govindaraju_group_2016`.
+   :math:`L_{v,i}`             J/kg                   Temperature-adjusted latent heat of vaporization at 298 K\ :footcite:p:`govindaraju_group_2016`.
+   :math:`V_{m,i}`             m\ :sup:`3`\ /mol      Temperature-adjusted liquid molar volume\ :footcite:p:`rackett_equation_1970,yamada_saturated_1973,govindaraju_group_2016`.
+   :math:`C_{\ell,i}`          J/kg/K                 Liquid specific heat capacity\ :footcite:p:`govindaraju_group_2016`. 
+   :math:`p_{sat,i}`           Pa                     Saturated vapor pressure\ :footcite:p:`lee_generalized_1975,ambrose_vapour_1989`.
+   ==========================  =====================  ===============================================================
+
 
 .. _tab-dimensionless-qtys:
 
 .. table:: Reduced temperature quantities
    :widths: auto
+   :align: center
 
    ====================  =========================================  ======================================================
    Symbol                Definition                                 Description
@@ -111,7 +131,7 @@ The heat of vaporization for each compound is then adjusted for variations in te
 Liquid molar volume
 ^^^^^^^^^^^^^^^^^^^
 
-The liquid molar volume is calculated at a specific temperature :math:`T` using the generalized Rackett equation\ :footcite:p:`rackett_equation_1970,yamada_saturated_1973` with an updated $\phi_i$ parameter\ :footcite:p:`govindaraju_group_2016`:
+The liquid molar volume is calculated at a specific temperature :math:`T` using the generalized Rackett equation\ :footcite:p:`rackett_equation_1970,yamada_saturated_1973` with an updated :math:`\phi_i` parameter\ :footcite:p:`govindaraju_group_2016`:
 
 .. math::
 
@@ -183,6 +203,7 @@ The :ref:`tab-mixture-properties` available in the GCM-Python code are listed in
 
 .. table:: Mixture properties
    :widths: auto
+   :align: center
    
    =============  ===============  =====================
    Symbol         Units            Description
@@ -194,7 +215,8 @@ The :ref:`tab-mixture-properties` available in the GCM-Python code are listed in
 
 .. table:: Mass and mole fractions
    :widths: auto
-   
+   :align: center
+
    =============  ========================================  ==================================================================================
    Symbol         Definition                                Description
    =============  ========================================  ==================================================================================
@@ -202,9 +224,9 @@ The :ref:`tab-mixture-properties` available in the GCM-Python code are listed in
    :math:`X_i`    :math:`\frac{n_i}{\sum_{k=1}^{N_c} n_k}`   Mole fraction of compound *i*. :math:`n_i` is the number of moles compound *i*.
    =============  ========================================  ==================================================================================
 
-Density
-^^^^^^^
-The density is calculated as:
+Mixture density
+^^^^^^^^^^^^^^^
+The mixture's density is calculated as:
 
 .. math::
    
@@ -219,8 +241,8 @@ where the molecular weight and molar volume of the mixture are given by:
    V_m = \sum_{i = 1}^{N_c} Y_i  V_{m,i}.
 
 
-Kinematic viscosity
-^^^^^^^^^^^^^^^^^^^
+Mixture kinematic viscosity
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The kinematic viscosity of the mixture is computed using the Kendall-Monroe\ :footcite:p:`kendall_viscosity_1917` mixing rule, with an option to use the Arrhenius\ :footcite:p:`arrhenius_uber_1887` mixing rule. The viscosity of each component.  Hernandez et al.\ :footcite:p:`hernandez_evaluation_2021` found, after evaluating thirty mixing rules, that both Kendall-Monroe and Arrhenius were among the most effective without relying on additional data or parameter fitting. The Kendall-Monroe rule is: 
 
@@ -240,8 +262,8 @@ The Arrhenius rule is:
 
    Viscosity of posf10325 (Jet A) versus temperature using Kendall-Monrow and Arrhenius mixing rules. Data collected from a sample of GE Jet A fuel by the Fuels and Combustion Science group at the National Renewable Energy Lab.
 
-Vapor pressure
-^^^^^^^^^^^^^^
+Mixture vapor pressure
+^^^^^^^^^^^^^^^^^^^^^^
 
 The vapor pressure of the mixture is calculated according to Raoult's law:
 
