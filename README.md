@@ -18,7 +18,7 @@ New contributions are always welcome.  If you have an idea for a new feature fol
 4. Open a Pull Request (PR) from `newFeature` on your fork to branch `main` GCM-Python repository.
 
 ## Sphinx Documentation
-This repository uses [Sphinx](https://www.sphinx-doc.org/en/master/usage/quickstart.html) to generate the documentation.  This requires the following Conda environment:
+This repository uses [Sphinx](https://www.sphinx-doc.org/en/master/usage/quickstart.html) to generate documentation.  This requires the following Conda environment:
 ~~~
 conda create --name sphinx-env
 conda activate sphinx-env
