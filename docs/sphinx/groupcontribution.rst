@@ -234,6 +234,12 @@ The Arrhenius rule is:
 
    \ln \nu_{Arr} = \sum_{i=1}^{N_c} X_i\ln\nu_i .
 
+.. figure:: /figures/viscosity-methods-posf10325.png
+   :width: 400pt
+   :align: center
+
+   Viscosity of posf10325 (Jet A) versus temperature using Kendall-Monrow and Arrhenius mixing rules. Data collected from a sample of GE Jet A fuel by the Fuels and Combustion Science group at the National Renewable Energy Lab.
+
 Vapor pressure
 ^^^^^^^^^^^^^^
 
@@ -242,6 +248,28 @@ The vapor pressure of the mixture is calculated according to Raoult's law:
 .. math::
 
    p_{v} = \sum_{i = 1}^{N_c} X_i \, p_{sat,i}.
+
+Mixture property validation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. image:: /figures/mixtureProps-decane.png
+   :width: 600pt
+   :align: center
+
+.. image:: /figures/mixtureProps-dodecane.png
+   :width: 600pt
+   :align: center
+
+.. image:: /figures/mixtureProps-heptane.png
+   :width: 600pt
+   :align: center
+
+.. image:: /figures/mixtureProps-posf10325.png
+   :width: 600pt
+   :align: center
+   
+Mixture properties of decane, dodecane, heptane, and posf10325 (Jet A).  Data from NIST Chemistry WebBook and NREL.
+
 
 
 References

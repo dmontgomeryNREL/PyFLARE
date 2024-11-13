@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'GCM-Documentation'
+project = 'Group Contribution Method'
 copyright = '2024, David Montgomery'
 author = 'David Montgomery'
 
