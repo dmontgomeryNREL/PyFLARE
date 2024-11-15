@@ -78,16 +78,16 @@ for i in range(0,len(T_pv)):
     pv[i] *= 1.0e-03
 
 # Plotting parameters
-fsize = 26
-ticksize = 24
-line_thickness = 5
-marker_size = 150
+fsize = 24
+ticksize = 22
+line_thickness = 4
+marker_size = 75
 
 # Plot mixture viscosity vs. Temp
-plt.figure(figsize=(12.3,8))
-plt.plot(gcm.K2C(T_nu), nu, '-k',label='Model Prediction', linewidth=line_thickness)
+plt.figure(figsize=(10,7.2))
+plt.plot(gcm.K2C(T_nu), nu, '-',label='Model Prediction', linewidth=line_thickness)
 plt.scatter(T_nu_data, nu_data, 
-            label=data_source, facecolors='tab:orange', s=marker_size)
+            label=data_source, facecolors='black', s=marker_size)
 plt.xlabel('Temperature ($^\circ$C)', fontsize=fsize)
 plt.ylabel('Viscosity (mm$^2$/s)', fontsize=fsize)
 plt.xlim([min(T_nu_data), max(T_nu_data)])
@@ -96,10 +96,10 @@ plt.yticks(fontsize=ticksize)
 plt.legend(fontsize=fsize)
 
 # Plot mixture density vs. Temp
-plt.figure(figsize=(12.3,8))
-plt.plot(gcm.K2C(T_rho), rho, '-k',label='Model Prediction', linewidth=line_thickness)
+plt.figure(figsize=(10,7.2))
+plt.plot(gcm.K2C(T_rho), rho, '-',label='Model Prediction', linewidth=line_thickness)
 plt.scatter(T_rho_data, rho_data, 
-            label=data_source, facecolors='tab:orange', s=marker_size)
+            label=data_source, facecolors='black', s=marker_size)
 plt.xlabel('Temperature ($^\circ$C)', fontsize=fsize)
 plt.ylabel('Density (g/cm$^3$)', fontsize=fsize)
 plt.xlim([min(T_rho_data), max(T_rho_data)])
@@ -108,10 +108,10 @@ plt.yticks(fontsize=ticksize)
 plt.legend(fontsize=fsize)
 
 # Plot mixture vapor pressure vs. Temp
-plt.figure(figsize=(12.3,8))
-plt.plot(gcm.K2C(T_pv), pv, '-k',label='Model Prediction', linewidth=line_thickness)
+plt.figure(figsize=(10,7.2))
+plt.plot(gcm.K2C(T_pv), pv, '-',label='Model Prediction', linewidth=line_thickness)
 plt.scatter(T_pv_data, pv_data, 
-            label=data_source, facecolors='tab:orange', s=marker_size)
+            label=data_source, facecolors='black', s=marker_size)
 plt.xlabel('Temperature ($^\circ$C)', fontsize=fsize)
 plt.ylabel('Vapor Pressure (kPa)', fontsize=fsize)
 plt.xlim([min(T_pv_data), max(T_pv_data)])
