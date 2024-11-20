@@ -13,7 +13,7 @@ class groupContribution:
     gcmTableDir = os.path.join(PyFLARE_PATH, 'gcmTableData')
     fuelDataDir = os.path.join(PyFLARE_PATH, 'fuelData')
     groupDecompDir = os.path.join(fuelDataDir, 'groupDecompositionData')
-    weightPercentageDir = os.path.join(fuelDataDir, 'weightPercentageData')
+    gcxgcDir = os.path.join(fuelDataDir, 'gcxgcData')
 
     # Path to GCM table
     gcmTableFile = os.path.join(gcmTableDir, 'gcmTable.xlsx')
@@ -73,7 +73,7 @@ class groupContribution:
 
         self.name = name
         groupDecompFile = os.path.join(self.groupDecompDir, f"{name}.xlsx")
-        weightPercentageFile = os.path.join(self.weightPercentageDir, f"{name}_init.xlsx")
+        gcxgcFile = os.path.join(self.gcxgcDir, f"{name}_init.xlsx")
 
         # Read functional group data for mixture (num_compounds,num_groups)
         df_Nij = pd.read_excel(groupDecompFile)
@@ -82,8 +82,8 @@ class groupContribution:
         self.num_groups = self.Nij.shape[1]
 
         # Read initial liquid composition of mixture and normalize to get mass frac
-        df_weightPercentage = pd.read_excel(weightPercentageFile, usecols=[1])
-        self.Y_0 = df_weightPercentage.to_numpy().flatten().astype(float)
+        df_gcxgc = pd.read_excel(gcxgcFile, usecols=[1])
+        self.Y_0 = df_gcxgc.to_numpy().flatten().astype(float)
         self.Y_0 /= np.sum(self.Y_0)
 
         # Make sure mixture data is consistent:
@@ -97,7 +97,7 @@ class groupContribution:
             raise ValueError(
                 f"Insufficient mixture description:\n"
                 f"The number of compounds in {self.groupDecomp} does not "
-                f"equal the number of compounds in {self.weightPercentage}."
+                f"equal the number of compounds in {self.gcxgc}."
                 )
         
         # Read and store GCM table properties
