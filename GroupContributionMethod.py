@@ -9,21 +9,18 @@ class groupContribution:
     """
     
     # Paths to input directories
-    GCM_PATH = os.path.dirname(os.path.abspath(__file__))
-    gcmTableDir = os.path.join(GCM_PATH, 'gcmTableData')
-    mixtureData = os.path.join(GCM_PATH, 'mixtureData')
-    compDescDir = os.path.join(mixtureData, 'compoundDescriptions')
-    initDataDir = os.path.join(mixtureData, 'initData')
+    PyFLARE_PATH = os.path.dirname(os.path.abspath(__file__))
+    gcmTableDir = os.path.join(PyFLARE_PATH, 'gcmTableData')
+    fuelDataDir = os.path.join(PyFLARE_PATH, 'fuelData')
+    groupDecompDir = os.path.join(fuelDataDir, 'groupDecompositionData')
+    weightPercentageDir = os.path.join(fuelDataDir, 'weightPercentageData')
 
-    # Default GCM table name
-    input_table_name = 'gcmTable.xlsx'
-    input_table = os.path.join(gcmTableDir, input_table_name)
+    # Path to GCM table
+    gcmTableFile = os.path.join(gcmTableDir, 'gcmTable.xlsx')
 
     # Class-level variables to hold mixture-specific data and GCM table properties
     name = ''
     num_compounds = None
-    mix_comp_desc = None
-    mix_init_data = None
 
     # Initial composition and functional group data for mixture
     Y_0 = None    # Initial mass fraction for mixture (num_compounds,)
@@ -71,40 +68,40 @@ class groupContribution:
         
         Parameters:
         name (str): Name of the mixture to initialize data for.
-        W (int): Determines if first-order only (W = 0) approximation
+        W (int): Determines if first-order only approximation (i.e. W = 0) 
         """
 
         self.name = name
-        self.mix_comp_desc = os.path.join(self.compDescDir, f"{name}.xlsx")
-        self.mix_init_data = os.path.join(self.initDataDir, f"{name}_init.xlsx")
+        groupDecompFile = os.path.join(self.groupDecompDir, f"{name}.xlsx")
+        weightPercentageFile = os.path.join(self.weightPercentageDir, f"{name}_init.xlsx")
 
         # Read functional group data for mixture (num_compounds,num_groups)
-        df_Nij = pd.read_excel(self.mix_comp_desc)
+        df_Nij = pd.read_excel(groupDecompFile)
         self.Nij = df_Nij.iloc[:, 1:].to_numpy()  
         self.num_compounds = self.Nij.shape[0]
         self.num_groups = self.Nij.shape[1]
 
         # Read initial liquid composition of mixture and normalize to get mass frac
-        mix_init_data_df = pd.read_excel(self.mix_init_data, usecols=[1])
-        self.Y_0 = mix_init_data_df.to_numpy().flatten().astype(float)
+        df_weightPercentage = pd.read_excel(weightPercentageFile, usecols=[1])
+        self.Y_0 = df_weightPercentage.to_numpy().flatten().astype(float)
         self.Y_0 /= np.sum(self.Y_0)
 
         # Make sure mixture data is consistent:
         if (self.num_groups < self.N_g1):
             raise ValueError(
                 f"Insufficient mixture description:\n"
-                f"The number of columns in {self.mix_comp_desc} is less than "
+                f"The number of columns in {self.groupDecomp} is less than "
                 f"the required number of first-order groups (N_g1 = {self.N_g1})."
                 )
         if (self.Y_0.shape[0] != self.num_compounds):
             raise ValueError(
                 f"Insufficient mixture description:\n"
-                f"The number of compounds in {self.mix_comp_desc} does not "
-                f"equal the number of compounds in {self.mix_init_data}."
+                f"The number of compounds in {self.groupDecomp} does not "
+                f"equal the number of compounds in {self.weightPercentage}."
                 )
         
         # Read and store GCM table properties
-        df_gcm_properties = pd.read_excel(self.input_table)
+        df_gcm_properties = pd.read_excel(self.gcmTableFile)
         gcm_properties = df_gcm_properties.loc[:, 
             ~df_gcm_properties.columns.isin(['Property', 'Units'])].to_numpy()
         
