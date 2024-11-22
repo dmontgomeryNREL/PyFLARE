@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'Group Contribution Method'
+project = 'PyFLARE'
 copyright = '2024, David Montgomery'
 author = 'David Montgomery'
 
@@ -43,7 +43,7 @@ extensions = [
     'sphinx.ext.githubpages', # To publish on GitHub Pages
     'sphinxcontrib.bibtex'
 ]
-bibtex_bibfiles = ['GCM.bib']
+bibtex_bibfiles = ['refs.bib']
 
 
 # Add any paths that contain templates here, relative to this directory.
@@ -66,3 +66,9 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+html_theme_options = {
+    'collapse_navigation': False, 
+    'navigation_depth': 3
+} 
+

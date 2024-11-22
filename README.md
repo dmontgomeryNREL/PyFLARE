@@ -1,5 +1,5 @@
 # PyFLARE
-The Python Fuel Library for Advanced Research on Evaporation (PyFLARE) utilizes the tables and functions of the Group Contribution Method (GCM) as proposed by [Constantinou and Gani (1994)](https://doi.org/10.1002/aic.690401011) and [Constantinou, Gani and O'Connel (1995)](https://doi.org/10.1016/0378-3812(94)02593-P), with additional physical properties discussed in [Govindaraju & Ihme (2016)](https://doi.org/10.1016/j.ijheatmasstransfer.2016.06.079).  The code is based on Pavan B. Govindaraju's [Matlab implementation](https://github.com/gpavanb-old/GroupContribution) of the GCM, and has been expanded to include additional thermodynamic properties and mixture properties.  The fuel library contains gas chromatography (GC x GC) data for a variety of fuels ranging from simple single component fuels to complex jet fuels.  The GC x GC data for POSF jet fuels comes from [Edwards (2020)](https://apps.dtic.mil/sti/pdfs/AD1093317.pdf).  
+The Python Fuel Library for Advanced Research in Evaporation (PyFLARE) utilizes the tables and functions of the Group Contribution Method (GCM) as proposed by [Constantinou and Gani (1994)](https://doi.org/10.1002/aic.690401011) and [Constantinou, Gani and O'Connel (1995)](https://doi.org/10.1016/0378-3812(94)02593-P), with additional physical properties discussed in [Govindaraju & Ihme (2016)](https://doi.org/10.1016/j.ijheatmasstransfer.2016.06.079).  The code is based on Pavan B. Govindaraju's [Matlab implementation](https://github.com/gpavanb-old/GroupContribution) of the GCM, and has been expanded to include additional thermodynamic properties and mixture properties.  The fuel library contains gas chromatography (GC x GC) data for a variety of fuels ranging from simple single component fuels to complex jet fuels.  The GC x GC data for POSF jet fuels comes from [Edwards (2020)](https://apps.dtic.mil/sti/pdfs/AD1093317.pdf).  
 
 ## Python Environment
 The following conda environment is required to run this code:
@@ -29,7 +29,7 @@ conda install conda-forge::sphinx_rtd_theme
 
 To view the documentation locally, build the html using the following: 
 ~~~
-cd GCM-Python/docs/sphinx
+cd PyFLARE/docs/sphinx
 sphinx-build -M html . _build/
 ~~~
-You should now be able to view the html by opening `GCM-Python/docs/sphinx_build/html/indx.html` in a web browser. 
+You should now be able to view the html by opening `PyFLARE/docs/sphinx/_build/html/index.html` in a web browser. 

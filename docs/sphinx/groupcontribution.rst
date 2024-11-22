@@ -1,9 +1,27 @@
-Group Contribution Method
-=========================
+PyFLARE
+=======
 
-The **Group Contribution Method (GCM)**, as developed by Constantinou and Gani\ :footcite:p:`constantinou_new_1994,constantinou_estimation_1995` in the mid-1990s, provides a systematic approach for estimating the thermodynamic properties of pure organic compounds. This method decomposes molecules into structural groups, each contributing to a target property based on predefined group values. By summing these contributions, the GCM accurately predicts essential properties, including the acentric factor, normal boiling point, liquid molar volume at standard conditions (298 K) and more. This predictive capability is particularly useful for complex mixtures or novel compounds, where experimental thermodynamic data may be unavailable.  One example is sustainable aviation fuels (SAFs), which often have limited thermodynamic data available. GCM provides SAF developers with a means to estimate these critical properties without extensive physical testing, thereby aiding in the identification of promising fuel compositions before committing to large-scale production.
+The **Python Fuel Library for Advanced Research in Evaporation (PyFLARE)** utilizes
+the group contribution method (GCM), as developed by Constantinou and 
+Gani\ :footcite:p:`constantinou_new_1994,constantinou_estimation_1995` in the mid-1990s, 
+to provide a systematic approach for estimating the thermodynamic properties of
+pure organic compounds. The GCM decomposes molecules into structural groups, 
+each contributing to a target property based on predefined group values. 
+By summing these contributions, the GCM accurately predicts essential properties, 
+including the acentric factor, normal boiling point, liquid molar volume at standard conditions 
+(298 K) and more. This predictive capability is particularly useful for complex 
+mixtures such as sustainable aviation fuels (SAFs), where experimental thermodynamic data 
+is limited. `PyFLARE` provides SAF developers with a means to estimate 
+these critical properties without extensive physical testing, thereby aiding in 
+the identification of promising fuel compositions before committing to large-scale production.
 
-This GCM-Python code was developed with SAF research in mind. It builds on `Pavan B. Govindaraju's Matlab implementation <https://github.com/gpavanb-old/GroupContribution>`_, which includes gas chromatography data for various jet fuels from the Air Force Research Laboratory\ :footcite:p:`edwards_jet_2020`, and has been expanded to include additional thermodynamic properties and mixture properties. The Section :ref:`tab-GCM-properties` outlines the properties for the *i-th* compound in a mixture, which depends on the *k-th* first-order and *j-th* second-order group contributions.
+`PyFLARE` was developed with SAF research in mind. It builds on 
+`Pavan B. Govindaraju's Matlab implementation <https://github.com/gpavanb-old/GroupContribution>`_, 
+and includes gas chromatography data (GC x GC) for various jet fuels from the Air Force Research Laboratory\ :footcite:p:`edwards_jet_2020`.
+Additionally, `PyFLARE` includes correlations for the thermodynamic properties of 
+mixture such as density, viscosity and vapor pressure. The Section :ref:`tab-GCM-properties` 
+outlines the properties for the *i-th* compound in a mixture, which depends on 
+the *k-th* first-order and *j-th* second-order group contributions.
 
 .. _tab-GCM-properties:
 
@@ -105,7 +123,8 @@ The kinematic viscosity of the *i-th* compound of the fuel,
    
    \nu_i = \frac{\mu_i}{\rho_i}, 
 
-is calculated from Dutt's equation (Eq. 4.23 in Viscosity of Liquids\ :footcite:p:`viswanath_viscosity_2007`) provided :math:`T` in :math:`^{\circ}` C:
+is calculated from Dutt's equation (Eq. 4.23 in Viscosity of 
+Liquids\ :footcite:p:`viswanath_viscosity_2007`) provided :math:`T` in :math:`^{\circ}` C:
 
 .. math::
 
@@ -116,12 +135,14 @@ is calculated from Dutt's equation (Eq. 4.23 in Viscosity of Liquids\ :footcite:
 Latent heat of vaporization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The latent heat of vaporization for each compound at standard pressure and temperature is calculated from the enthalpy of vaporization as:
+The latent heat of vaporization for each compound at standard pressure and 
+temperature is calculated from the enthalpy of vaporization as:
 
 .. math::
    L_{v,stp,i} = \frac{\Delta H_{v,stp,i}}{M_{w,i}}.
 
-The heat of vaporization for each compound is then adjusted for variations in temperature\ :footcite:p:`govindaraju_group_2016`:
+The heat of vaporization for each compound is then adjusted for variations in 
+temperature\ :footcite:p:`govindaraju_group_2016`:
 
 .. math::
    L_{v,i} = L_{v,stp,i} \bigg(\frac{1 - T_{r,i}}{1-T_{r,b,i}} \bigg)^{0.38}.
@@ -131,7 +152,9 @@ The heat of vaporization for each compound is then adjusted for variations in te
 Liquid molar volume
 ^^^^^^^^^^^^^^^^^^^
 
-The liquid molar volume is calculated at a specific temperature :math:`T` using the generalized Rackett equation\ :footcite:p:`rackett_equation_1970,yamada_saturated_1973` with an updated :math:`\phi_i` parameter\ :footcite:p:`govindaraju_group_2016`:
+The liquid molar volume is calculated at a specific temperature :math:`T` using 
+the generalized Rackett equation\ :footcite:p:`rackett_equation_1970,yamada_saturated_1973` 
+with an updated :math:`\phi_i` parameter\ :footcite:p:`govindaraju_group_2016`:
 
 .. math::
 
@@ -163,12 +186,17 @@ The liquid specific heat capacity for each compound at standard pressure tempera
 Saturated vapor pressure
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-The saturated vapor pressure for each compound is calculated as a function of temperature using either the Lee–Kesler method\ :footcite:p:`lee_generalized_1975` or the Ambrose-Walton method\ :footcite:p:`ambrose_vapour_1989`.  Both methods solve
+The saturated vapor pressure for each compound is calculated as a function of 
+temperature using either the Lee–Kesler method\ :footcite:p:`lee_generalized_1975` 
+or the Ambrose-Walton method\ :footcite:p:`ambrose_vapour_1989`.  Both methods solve
 
 .. math::
    \ln p_{r,sat,i} = f_i^{(0)} + \omega_i f_i^{(1)} + \omega_i^2 f_i^{(2)}
 
-for the reduced saturated vapor pressure for each compound, :math:`p_{r,sat,i} = p_{sat,i}/p_{c,i}`.  The default method in the GCM-Python code is the Lee-Kesler method, as it is more stable at higher temperatures. 
+for the reduced saturated vapor pressure for each compound, 
+:math:`p_{r,sat,i} = p_{sat,i}/p_{c,i}`.  
+The default method in `PyFLARE` is the Lee-Kesler method, as it is 
+more stable at higher temperatures. 
 The Lee-Kesler\ :footcite:p:`lee_generalized_1975` method defines
 
 .. math::
@@ -196,8 +224,14 @@ with :math:`\tau_i = 1 - T_{r,i}`.
 Equations for mixture properties from GCM
 -----------------------------------------
 
-This section contains correlations for estimating physical properties of the mixture from the individual compound and physical properties defined in :ref:`eq-GCM-properties` and :ref:`eq-GCM-correlations`.  These correlations make it possible to evaluate physical properties at non-standard temperatures and pressures, given that group contribution properties are only defined at standard conditions. 
-The :ref:`tab-mixture-properties` available in the GCM-Python code are listed in table below.  Mass and mole fractions defined in Table \ref{tab:mass-mole-fracs} are used throughout this section.
+This section contains correlations for estimating physical properties of the 
+mixture from the individual compound and physical properties defined in 
+:ref:`eq-GCM-properties` and :ref:`eq-GCM-correlations`.  These correlations make 
+it possible to evaluate physical properties at non-standard temperatures and 
+pressures, given that group contribution properties are only defined at standard 
+conditions. The :ref:`tab-mixture-properties` available in `PyFLARE` are listed in 
+table below.  Mass and mole fractions defined in Table \ref{tab:mass-mole-fracs} 
+are used throughout this section.
 
 .. _tab-mixture-properties:
 
@@ -285,12 +319,8 @@ Mixture property validation
 .. image:: /figures/mixtureProps-heptane.png
    :width: 600pt
    :align: center
-
-.. image:: /figures/mixtureProps-posf10325.png
-   :width: 600pt
-   :align: center
    
-Mixture properties of decane, dodecane, heptane, and posf10325 (Jet A).  Data from NIST Chemistry WebBook and NREL.
+Mixture properties of decane, dodecane, and heptane.  Data from NIST Chemistry WebBook.
 
 
 
