@@ -90,14 +90,14 @@ class groupContribution:
         if (self.num_groups < self.N_g1):
             raise ValueError(
                 f"Insufficient mixture description:\n"
-                f"The number of columns in {self.groupDecomp} is less than "
+                f"The number of columns in {groupDecompFile} is less than "
                 f"the required number of first-order groups (N_g1 = {self.N_g1})."
                 )
         if (self.Y_0.shape[0] != self.num_compounds):
             raise ValueError(
                 f"Insufficient mixture description:\n"
-                f"The number of compounds in {self.groupDecomp} does not "
-                f"equal the number of compounds in {self.gcxgc}."
+                f"The number of compounds in {groupDecompFile} does not "
+                f"equal the number of compounds in {gcxgcFile}."
                 )
         
         # Read and store GCM table properties
