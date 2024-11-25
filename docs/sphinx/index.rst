@@ -1,7 +1,7 @@
 Welcome to PyFLARE's documentation!
 ===================================
 
-The **Python Fuel Library for Advanced Research in Evaporation (PyFLARE)** utilizes
+The **Python Fuel Library for Advanced Research on Evaporation (PyFLARE)** utilizes
 the group contribution method (GCM), as developed by Constantinou and 
 Gani\ :footcite:p:`constantinou_new_1994,constantinou_estimation_1995` in the mid-1990s
 with additions from Govindaraju and Ihme (2016)\ :footcite:p:`govindaraju_group_2016`, 

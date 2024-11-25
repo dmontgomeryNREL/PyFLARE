@@ -9,7 +9,7 @@ import GroupContributionMethod as gcm
 # -----------------------------------------------------------------------------
 
 # Fuel for GCM and data for validation (see fuelData/propertiesData for options)
-# fuel_name = 'decane', 'dodecane', 'heptane', 'posf10325', 'posf10264'
+# fuel_name = 'decane', 'dodecane', 'heptane', 'posf10264', 'posf10289', 'posf10325'
 fuel_name = 'decane'
 
 # droplet specs
@@ -33,7 +33,8 @@ fuel_to_data = {
     'dodecane': ('dodecane-NIST.csv', 'NIST Data'),
     'posf10264': ('posf10264.csv', 'Edwards Data'),
     'posf10289': ('posf10289.csv', 'Edwards Data'),
-    'posf10325': ('posf10325.csv', 'Edwards Data')
+    'posf10325': ('posf10325.csv', 'Edwards Data'),
+    'a-2_posf10325_Ed': ('a-2_posf10325_Ed.csv', 'Edwards Data')
 }
 data_file, data_source = fuel_to_data.get(fuel_name)
 dataPath = os.path.join(fuel.fuelDataDir,"propertiesData")
