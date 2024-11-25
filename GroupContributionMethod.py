@@ -469,7 +469,7 @@ class groupContribution:
         Returns:
         float: Mixture viscosity in Pa*s.
         """
-        nu = self.mixture_dynamic_viscosity(mass, T, correlation)
+        nu = self.mixture_kinematic_viscosity(mass, T, correlation)
         Yi = self.mass_frac(mass)
         rho = self.mixture_density(Yi, T)            
         
