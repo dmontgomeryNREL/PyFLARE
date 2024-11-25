@@ -13,7 +13,7 @@ class groupContribution:
     gcmTableDir = os.path.join(PyFLARE_PATH, 'gcmTableData')
     fuelDataDir = os.path.join(PyFLARE_PATH, 'fuelData')
     groupDecompDir = os.path.join(fuelDataDir, 'groupDecompositionData')
-    gcxgcDir = os.path.join(fuelDataDir, 'gcxgcData')
+    gcxgcDir = os.path.join(fuelDataDir, 'gcData')
 
     # Path to GCM table
     gcmTableFile = os.path.join(gcmTableDir, 'gcmTable.xlsx')
