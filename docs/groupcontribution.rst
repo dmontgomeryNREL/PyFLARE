@@ -32,22 +32,22 @@ Table of GCM properties
    :widths: auto
    :align: center
 
-   ==========================  =====================  ===========================================  ====================  ===========================================================
-   Property                    Units                  Group Contributions                          Units                 Description
-   ==========================  =====================  ===========================================  ====================  ===========================================================
-   :math:`M_{w,i}`             kg/mol                 :math:`m_{w1k}`, :math:`m_{w2j}`             g/mol                 Molecular weight.
-   :math:`T_{c,i}`             K                      :math:`t_{c1k}`, :math:`t_{c2j}`             1                     Critical temperature\ :footcite:p:`constantinou_new_1994`.
-   :math:`p_{c,i}`             Pa                     :math:`p_{c1k}`, :math:`p_{c2j}`             bar\ :sup:`-0.5`      Critical pressure\ :footcite:p:`constantinou_new_1994`.
-   :math:`V_{c,i}`             m\ :sup:`3`\ /mol      :math:`v_{c1k}`, :math:`v_{c2j}`             m\ :sup:`3`\ /kmol    Critical volume\ :footcite:p:`constantinou_new_1994`.
-   :math:`T_{b,i}`             K                      :math:`t_{b1k}`, :math:`t_{b2j}`             1                     Normal boiling point\ :footcite:p:`constantinou_new_1994`.
-   :math:`T_{m,i}`             K                      :math:`t_{m1k}`, :math:`t_{m2j}`             1                     Normal melting point\ :footcite:p:`constantinou_new_1994`.
-   :math:`\Delta H_{f,i}`      J/mol                  :math:`h_{f1k}`, :math:`h_{f2j}`             kJ/mol                Enthalpy of formation at 298 K\ :footcite:p:`constantinou_new_1994`.
-   :math:`\Delta G_{f,i}`      J/mol                  :math:`g_{f1k}`, :math:`g_{f2j}`             kJ/mol                Standard Gibbs free energy at 298 K\ :footcite:p:`constantinou_new_1994`.
-   :math:`\Delta H_{v,stp,i}`  J/mol                  :math:`h_{v1k}`, :math:`h_{v2j}`             kJ/mol                Enthalpy of vaporization at 298 K\ :footcite:p:`constantinou_new_1994`.
-   :math:`\omega_i`            1                      :math:`\omega_{1k}`, :math:`\omega_{2j}`     1                     Accentric factor\ :footcite:p:`constantinou_estimation_1995`.
-   :math:`V_{m,stp,i}`         m\ :sup:`3`\ /mol      :math:`v_{m1k}`, :math:`v_{m2j}`             m\ :sup:`3`\ /kmol    Liquid molar volume at 298 K\ :footcite:p:`constantinou_estimation_1995`. 
-   :math:`C_{p,stp,i}`         J/mol/K                :math:`C_{pA1_k}`, :math:`C_{pA2_k}`,...     J/mol/K               Specific heat capacity\ :footcite:p:`nielsen_molecular_1998,poling_properties_2001`.
-   ==========================  =====================  ===========================================  ====================  ===========================================================
+   ====================================  =====================  ===========================================  ====================  ===========================================================
+   Property                              Units                  Group Contributions                          Units                 Description
+   ====================================  =====================  ===========================================  ====================  ===========================================================
+   :math:`M_{w,i}`                       kg/mol                 :math:`m_{w1k}`, :math:`m_{w2j}`             g/mol                 Molecular weight.
+   :math:`T_{c,i}`                       K                      :math:`t_{c1k}`, :math:`t_{c2j}`             1                     Critical temperature\ :footcite:p:`constantinou_new_1994`.
+   :math:`p_{c,i}`                       Pa                     :math:`p_{c1k}`, :math:`p_{c2j}`             bar\ :sup:`-0.5`      Critical pressure\ :footcite:p:`constantinou_new_1994`.
+   :math:`V_{c,i}`                       m\ :sup:`3`\ /mol      :math:`v_{c1k}`, :math:`v_{c2j}`             m\ :sup:`3`\ /kmol    Critical volume\ :footcite:p:`constantinou_new_1994`.
+   :math:`T_{b,i}`                       K                      :math:`t_{b1k}`, :math:`t_{b2j}`             1                     Normal boiling point\ :footcite:p:`constantinou_new_1994`.
+   :math:`T_{m,i}`                       K                      :math:`t_{m1k}`, :math:`t_{m2j}`             1                     Normal melting point\ :footcite:p:`constantinou_new_1994`.
+   :math:`\Delta H_{f,i}`                J/mol                  :math:`h_{f1k}`, :math:`h_{f2j}`             kJ/mol                Enthalpy of formation at 298 K\ :footcite:p:`constantinou_new_1994`.
+   :math:`\Delta G_{f,i}`                J/mol                  :math:`g_{f1k}`, :math:`g_{f2j}`             kJ/mol                Standard Gibbs free energy at 298 K\ :footcite:p:`constantinou_new_1994`.
+   :math:`\Delta H_{v,\textit{stp},i}`   J/mol                  :math:`h_{v1k}`, :math:`h_{v2j}`             kJ/mol                Enthalpy of vaporization at 298 K\ :footcite:p:`constantinou_new_1994`.
+   :math:`\omega_i`                      1                      :math:`\omega_{1k}`, :math:`\omega_{2j}`     1                     Accentric factor\ :footcite:p:`constantinou_estimation_1995`.
+   :math:`V_{m,\textit{stp},i}`          m\ :sup:`3`\ /mol      :math:`v_{m1k}`, :math:`v_{m2j}`             m\ :sup:`3`\ /kmol    Liquid molar volume at 298 K\ :footcite:p:`constantinou_estimation_1995`. 
+   :math:`C_{p,\textit{stp},i}`          J/mol/K                :math:`C_{pA1_k}`, :math:`C_{pA2_k}`,...     J/mol/K               Specific heat capacity\ :footcite:p:`nielsen_molecular_1998,poling_properties_2001`.
+   ====================================  =====================  ===========================================  ====================  ===========================================================
 
 .. _eq-GCM-properties:
 
@@ -67,10 +67,10 @@ The properties of each compound in a mixture can be calculated as the sum of con
     T_{m,i} &= 102.425 \ln  \bigg[ \sum_{k = 1}^{N_{g_1}} \mathbf{N}_{ik} t_{m1k} + W \sum_{j=1}^{N_{g_2}}      \mathbf{M}_{ij} t_{m2j}\bigg],\\
     \Delta H_{f,i} &= \Bigg( \bigg[ \sum_{k = 1}^{N_{g_1}} \mathbf{N}_{ik} h_{f1k} + W \sum_{j=1}^{N_{g_2}}     \mathbf{M}_{ij} h_{f2j} \bigg] + 10.835\Bigg) \times 10^3,\\
     \Delta G_{f,i} &= \Bigg( \bigg[ \sum_{k = 1}^{N_{g_1}} \mathbf{N}_{ik} g_{f1k} + W \sum_{j=1}^{N_{g_2}}     \mathbf{M}_{ij} g_{f2j} \bigg] -14.828 \Bigg) \times 10^3,\\
-    \Delta H_{v,stp,i} &= \Bigg( \bigg[ \sum_{k = 1}^{N_{g_1}} \mathbf{N}_{ik} h_{v1k} + W                      \sum_{j=1}^{N_{g_2}} \mathbf{M}_{ij} h_{v2j} \bigg] + 6.829\Bigg) \times 10^3, \\
+    \Delta H_{v,\textit{stp},i} &= \Bigg( \bigg[ \sum_{k = 1}^{N_{g_1}} \mathbf{N}_{ik} h_{v1k} + W                      \sum_{j=1}^{N_{g_2}} \mathbf{M}_{ij} h_{v2j} \bigg] + 6.829\Bigg) \times 10^3, \\
     \omega_i &= 0.4085 \ln  \bigg( \Big[  \sum_{k=1}^{N_{g_1}} \mathbf{N}_{ik} \omega_{1k} + W                  \sum_{j=1}^{N_{g_2}} \mathbf{M}_{ij} \omega_{2j} + 1.1507\Big]^{1/0.5050} \bigg), \label{eq:gcm-omega}\\
-    V_{m,stp,i} &= \Bigg( \bigg[ \sum_{k=1}^{N_{g_1}} \mathbf{N}_{ik} v_{m1k} + W \sum_{j=1}^{N_{g_2}}          \mathbf{M}_{ij} v_{m2j} \bigg] + 0.01211 \Bigg)\times 10^{-3}, \\
-    C_{p,stp,i} & =\bigg[\sum_{k=1}^{N_{g_1}} \mathbf{N}_{ik} C_{pA1_k} + W \sum_{j=1}^{N_{g_2}}                \mathbf{M}_{ij} C_{pA2_j} -19.7779\bigg]  \nonumber \\
+    V_{m,\textit{stp},i} &= \Bigg( \bigg[ \sum_{k=1}^{N_{g_1}} \mathbf{N}_{ik} v_{m1k} + W \sum_{j=1}^{N_{g_2}}          \mathbf{M}_{ij} v_{m2j} \bigg] + 0.01211 \Bigg)\times 10^{-3}, \\
+    C_{p,\textit{stp},i} & =\bigg[\sum_{k=1}^{N_{g_1}} \mathbf{N}_{ik} C_{pA1_k} + W \sum_{j=1}^{N_{g_2}}                \mathbf{M}_{ij} C_{pA2_j} -19.7779\bigg]  \nonumber \\
         & +\bigg[\sum_{k=1}^{N_{g_1}} \mathbf{N}_{ik} C_{pB1_k} + W \sum_{j=1}^{N_{g_2}} \mathbf{M}_{ij} C_{pB2_j} + 22.5981\bigg] \theta \nonumber\\
         & +\bigg[\sum_{k=1}^{N_{g_1}} \mathbf{N}_{ik} C_{pC1_k} + W \sum_{j=1}^{N_{g_2}} \mathbf{M}_{ij} C_{pC2_j} - 10.7983\bigg] \theta^2 \\
     \theta &= \frac{T - 298.15}{700}
@@ -89,16 +89,16 @@ This section presents correlations for physical properties that leverage the ind
    :widths: auto
    :align: center
 
-   ==========================  =====================  ===============================================================
-   Property                    Units                  Description
-   ==========================  =====================  ===============================================================
-   :math:`\nu_i`               m\ :sup:`2`\ /s        Kinematic viscosity\ :footcite:p:`viswanath_viscosity_2007`.
-   :math:`L_{v,stp,i}`         J/kg                   Latent heat of vaporization at 298 K\ :footcite:p:`govindaraju_group_2016`.
-   :math:`L_{v,i}`             J/kg                   Temperature-adjusted latent heat of vaporization at 298 K\ :footcite:p:`govindaraju_group_2016`.
-   :math:`V_{m,i}`             m\ :sup:`3`\ /mol      Temperature-adjusted liquid molar volume\ :footcite:p:`rackett_equation_1970,yamada_saturated_1973,govindaraju_group_2016`.
-   :math:`C_{\ell,i}`          J/kg/K                 Liquid specific heat capacity\ :footcite:p:`govindaraju_group_2016`. 
-   :math:`p_{sat,i}`           Pa                     Saturated vapor pressure\ :footcite:p:`lee_generalized_1975,ambrose_vapour_1989`.
-   ==========================  =====================  ===============================================================
+   =============================  =====================  ===============================================================
+   Property                       Units                  Description
+   =============================  =====================  ===============================================================
+   :math:`\nu_i`                  m\ :sup:`2`\ /s        Kinematic viscosity\ :footcite:p:`viswanath_viscosity_2007`.
+   :math:`L_{v,\textit{stp},i}`   J/kg                   Latent heat of vaporization at 298 K\ :footcite:p:`govindaraju_group_2016`.
+   :math:`L_{v,i}`                J/kg                   Temperature-adjusted latent heat of vaporization at 298 K\ :footcite:p:`govindaraju_group_2016`.
+   :math:`V_{m,i}`                m\ :sup:`3`\ /mol      Temperature-adjusted liquid molar volume\ :footcite:p:`rackett_equation_1970,yamada_saturated_1973,govindaraju_group_2016`.
+   :math:`C_{\ell,i}`             J/kg/K                 Liquid specific heat capacity\ :footcite:p:`govindaraju_group_2016`. 
+   :math:`p_{sat,i}`              Pa                     Saturated vapor pressure\ :footcite:p:`lee_generalized_1975,ambrose_vapour_1989`.
+   =============================  =====================  ===============================================================
 
 
 .. _tab-dimensionless-qtys:
@@ -107,13 +107,13 @@ This section presents correlations for physical properties that leverage the ind
    :widths: auto
    :align: center
 
-   ====================  =========================================  ======================================================
-   Symbol                Definition                                 Description
-   ====================  =========================================  ======================================================
-   :math:`T_{r,i}`       :math:`\frac{T}{T_{c,i}}`                  Reduced temperature.
-   :math:`T_{r,b,i}`     :math:`\frac{T}{T_{b,i}}`                  Reduced temperature relative to normal boiling point.
-   :math:`T_{r,stp,i}`   :math:`\frac{298 \text{ (K)}}{T_{c,i}}`    Reduced temperature relative to standard temperature.
-   ====================  =========================================  ======================================================
+   =============================  =========================================  ======================================================
+   Symbol                         Definition                                 Description
+   =============================  =========================================  ======================================================
+   :math:`T_{r,i}`                :math:`\frac{T}{T_{c,i}}`                  Reduced temperature.
+   :math:`T_{r,b,i}`              :math:`\frac{T}{T_{b,i}}`                  Reduced temperature relative to normal boiling point.
+   :math:`T_{r,\textit{stp},i}`   :math:`\frac{298 \text{ (K)}}{T_{c,i}}`    Reduced temperature relative to standard temperature.
+   =============================  =========================================  ======================================================
 
 Kinematic viscosity
 ^^^^^^^^^^^^^^^^^^^
@@ -139,13 +139,13 @@ The latent heat of vaporization for each compound at standard pressure and
 temperature is calculated from the enthalpy of vaporization as:
 
 .. math::
-   L_{v,stp,i} = \frac{\Delta H_{v,stp,i}}{M_{w,i}}.
+   L_{v,\textit{stp},i} = \frac{\Delta H_{v,\textit{stp},i}}{M_{w,i}}.
 
 The heat of vaporization for each compound is then adjusted for variations in 
 temperature\ :footcite:p:`govindaraju_group_2016`:
 
 .. math::
-   L_{v,i} = L_{v,stp,i} \bigg(\frac{1 - T_{r,i}}{1-T_{r,b,i}} \bigg)^{0.38}.
+   L_{v,i} = L_{v,\textit{stp},i} \bigg(\frac{1 - T_{r,i}}{1-T_{r,b,i}} \bigg)^{0.38}.
 
 
 
@@ -158,7 +158,7 @@ with an updated :math:`\phi_i` parameter\ :footcite:p:`govindaraju_group_2016`:
 
 .. math::
 
-   V_{m,i} = V_{m,stp,i} Z^{\phi_i}_{c,i}, 
+   V_{m,i} = V_{m,\textit{stp},i} Z^{\phi_i}_{c,i}, 
 
 where
 
@@ -167,8 +167,8 @@ where
    Z_{c,i} &= 0.29056 - 0.08775 \omega_i,  \\
    \phi_i &= 
    \begin{cases}
-       (1 - T_{r,i})^{2/7} - (1 - T_{r,stp,i})^{2/7}, & \text{ if } T \leq T_{c,i} \\
-       - (1 - T_{r,stp,i})^{2/7}, & \text{ if } T > T_{c,i}
+       (1 - T_{r,i})^{2/7} - (1 - T_{r,\textit{stp},i})^{2/7}, & \text{ if } T \leq T_{c,i} \\
+       - (1 - T_{r,\textit{stp},i})^{2/7}, & \text{ if } T > T_{c,i}
    \end{cases}. \label{eq:phi}
    \end{align*}
 
@@ -179,7 +179,7 @@ Liquid specific heat capacity
 The liquid specific heat capacity for each compound at standard pressure temperature is calculated from the specific heat capacity as:
 
 .. math::
-   C_{\ell,i} = \frac{C_{p,stp,i}}{M_{w,i}} 
+   C_{\ell,i} = \dfrac{C_{p,\textit{stp},i}}{M_{w,i}} 
 
 
 
@@ -191,10 +191,10 @@ temperature using either the Lee–Kesler method\ :footcite:p:`lee_generalized_1
 or the Ambrose-Walton method\ :footcite:p:`ambrose_vapour_1989`.  Both methods solve
 
 .. math::
-   \ln p_{r,sat,i} = f_i^{(0)} + \omega_i f_i^{(1)} + \omega_i^2 f_i^{(2)}
+   \ln p_{r,\text{sat},i} = f_i^{(0)} + \omega_i f_i^{(1)} + \omega_i^2 f_i^{(2)}
 
 for the reduced saturated vapor pressure for each compound, 
-:math:`p_{r,sat,i} = p_{sat,i}/p_{c,i}`.  
+:math:`p_{r,\text{sat},i} = p_{\text{sat},i}/p_{c,i}`.  
 The default method in `PyFLARE` is the Lee-Kesler method, as it is 
 more stable at higher temperatures. 
 The Lee-Kesler\ :footcite:p:`lee_generalized_1975` method defines
@@ -278,7 +278,12 @@ where the molecular weight and molar volume of the mixture are given by:
 Mixture kinematic viscosity
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The kinematic viscosity of the mixture is computed using the Kendall-Monroe\ :footcite:p:`kendall_viscosity_1917` mixing rule, with an option to use the Arrhenius\ :footcite:p:`arrhenius_uber_1887` mixing rule. The viscosity of each component.  Hernandez et al.\ :footcite:p:`hernandez_evaluation_2021` found, after evaluating thirty mixing rules, that both Kendall-Monroe and Arrhenius were among the most effective without relying on additional data or parameter fitting. The Kendall-Monroe rule is: 
+The kinematic viscosity of the mixture is computed using the Kendall-Monroe\ :footcite:p:`kendall_viscosity_1917` 
+mixing rule, with an option to use the Arrhenius\ :footcite:p:`arrhenius_uber_1887` 
+mixing rule. The viscosity of each component.  Hernandez et al.\ :footcite:p:`hernandez_evaluation_2021` 
+found, after evaluating thirty mixing rules, that both Kendall-Monroe and Arrhenius 
+were among the most effective without relying on additional data or parameter fitting. 
+The Kendall-Monroe rule is: 
 
 .. math::
 
@@ -294,7 +299,9 @@ The Arrhenius rule is:
    :width: 400pt
    :align: center
 
-   Viscosity of posf10325 (Jet A) versus temperature using Kendall-Monrow and Arrhenius mixing rules. Data collected from a sample of GE Jet A fuel by the Fuels and Combustion Science group at the National Renewable Energy Lab.
+   Viscosity of posf10325 (Jet A) versus temperature using Kendall-Monrow and 
+   Arrhenius mixing rules. Data collected from a sample of GE Jet A fuel by the 
+   Fuels and Combustion Science group at the National Renewable Energy Lab.
 
 Mixture vapor pressure
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -302,8 +309,9 @@ Mixture vapor pressure
 The vapor pressure of the mixture is calculated according to Raoult's law:
 
 .. math::
-
-   p_{v} = \sum_{i = 1}^{N_c} X_i \, p_{sat,i}.
+   \begin{align*}
+   p_{v} = \sum_{i = 1}^{N_c} X_i \, p_{\textit{sat},i}.
+   \end{align*}
 
 Mixture property validation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
