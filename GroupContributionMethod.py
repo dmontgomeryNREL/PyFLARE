@@ -29,6 +29,7 @@ class groupContribution:
     # GCM table data from Constantinou and Gani (num_groups,)
     N_g1 = 78
     N_g2 = 43
+    k_B = 1.380649e-23 # Boltzmann's constant J/K
     Tck  = None
     Pck  = None
     Vck  = None
@@ -178,10 +179,12 @@ class groupContribution:
         # L_v,stp (latent heat of vaporization at 298 K)
         self.Lv_stp = self.Hv_stp / self.MW # J/kg
 
-        # Lennard-Jones parameters for diffusion calculations (eqt. 30 in Govindaraju)
-        self.epsVec = (0.7915 + 0.1693 * self.omega) * self.Tc
-        self.SigmaVec = 1e-10 * (2.3551 - 0.0874 * self.omega) * \
-                        ((1e5 * self.Tc / self.Pc)**(1 / 3))
+        # Lennard-Jones parameters for diffusion calculations (Tee et al. 1966)
+        self.epsilon = (0.7915 + 0.1693 * self.omega) * self.Tc * self.k_B # K
+        Pc_atm = self.Pc/101300 # atm
+        self.sigma = (2.3551 - 0.0874 * self.omega) * (self.Tc / Pc_atm)**(1./3) # Angstroms
+        self.sigma *= 1e-10 # m
+
         
     # -------------------------------------------------------------------------
     # Member functions
@@ -210,7 +213,7 @@ class groupContribution:
         Calculate the mole fractions from the mass of each component.
         
         Parameters:
-        mass (np.ndarray): Mass of each compound (shape: num_compounds,).
+        mass (np.ndarray): Mass of each compound in kg (shape: num_compounds,).
 
         Returns:
         Xi np.ndarray: Molar fractions of the compounds (shape: num_compounds,).
@@ -226,6 +229,22 @@ class groupContribution:
             Xi = np.zeros_like(self.MW)
         
         return Xi
+    
+    def density(self,T):
+        """
+        Calculate the density of each component at temperature T.
+
+        Parameters:
+        T (float): Temperature of the mixture in Kelvin
+
+        Return:
+        rho (np.array): Density of each compound in kg/m^3 (shape: num_compounds,)
+        """
+        MW = self.MW # kg/mol
+        Vm = self.molar_liquid_vol(T) # m^3/mol
+        rho = MW / Vm # Density of each component of the mixture kg/m^3 
+        
+        return rho
 
     def viscosity_kinematic(self, T):
         """
@@ -251,22 +270,21 @@ class groupContribution:
 
         return nu_i
     
-    def viscosity_dynamic(self, rho, T):
+    def viscosity_dynamic(self, T):
         """
         Calculates liquid dynamic viscosity based on droplet temperature and 
         density using Dutt's Equation (4.23) in "Viscosity of Liquids".
         
         Parameters:
-        rho (np.ndarray): Density of each component drop in kg/m^3.
         T (float): Temperature in Kelvin.
         
-        
         Returns:
-        np.ndarray: Dynamic viscosity in Pa*s (shape: num_compounds,).
+        mu (np.ndarray): Dynamic viscosity in Pa*s (shape: num_compounds,).
         """
-        nu = self.viscosity_kinematic(T)
-        mu = nu * rho 
-        return mu 
+        nu_i = self.viscosity_kinematic(T) # m^2/s
+        rho_i = self.density(T) # kg/m^3
+        mu_i = nu_i * rho_i # Pa*s
+        return mu_i 
 
     def Cp(self, T):
         """
@@ -373,24 +391,26 @@ class groupContribution:
         
         return Lvi
     
-    def diffusion_coeff(self, p, Tin):
+    def diffusion_coeff(self, p, T, sigma_gas = 3.62e-10, epsilon_gas = 97.0, MW_gas = 28.97e-3):
         """
-        Computes the diffusion coefficient using Lennard-Jones parameters. These 
-        are from Appendix B in Govindaraju Equation (33).
+        Computes the diffusion coefficient using Lennard-Jones parameters according
+        to Wilke and Lee.  See equation 11-4.1 in Poling.
 
         Parameters:
         p (float): Pressure in Pa.
-        Tin (float): Temperature in Kelvin.
+        T (float): Temperature in Kelvin.
+        sigma_gas (float, optional): collision diameter (m), default is air
+        epsilon_gas (float, optional): well depth (J), default is air
+        MW_gas (float, optional): Mean molecular weight of gas (kg/mol), default is air
 
         Returns:
-        numpy.ndarray: Diffusion coefficient.
+        D_AB (np.ndarray): Diffusion coefficient (num_compounds,).
         """		
-        # Eps and Sigma for air, replace with desired gas phase
-        eps_air = 78.6 
-        Sigma_air = 3.711e-10 
-        sigmaAB = (Sigma_air + self.SigmaVec) / 2
-        evaVec = (self.epsVec * eps_air) ** 0.5
-        Tstar = Tin / evaVec
+
+        sigmaAB = (sigma_gas + self.sigma) / 2 # (m)
+        sigmaAB *= 1e+10 # Convert to Å
+        epsilonAB = (self.epsilon * epsilon_gas) ** 0.5 # J^0.5
+        Tstar = self.k_B * T / epsilonAB
         A = 1.06036
         B = 0.15610
         C = 0.193
@@ -402,14 +422,18 @@ class groupContribution:
 
         omegaD = A / (Tstar ** B) + C / np.exp(D * Tstar) + E / np.exp(F * Tstar) + G / np.exp(H * Tstar)
 
-        # Molecular weight for air, replace with desired gas phase
-        MW_air = 28.97e-3
+        # Convert molecular weights from kg/mol to g/mol then calcualte M_AB
+        MW_gas *= 1e3 
+        MW_mix = self.MW * 1e3
+        M_AB = 2 * (MW_mix * MW_gas) / (MW_mix + MW_gas)
 
-        MWa = 2e3 * (self.MW * MW_air) / (self.MW + MW_air)
+        # Convert pressure from Pa to bar
+        p *= 1e-5 # bar
 
-        r = (1 / p) * 1e5 * ((3.03 - (0.98 / (MWa ** 0.5))) * 1e-27 * (Tin ** 1.5)) / ((MWa ** 0.5) * (sigmaAB ** 2) * omegaD)
+        D_AB = 1e-3 * (3.03 - 0.98 / (M_AB ** 0.5)) * (T ** 1.5) / (p * M_AB ** 0.5 * sigmaAB ** 2 * omegaD) # cm^2/s
+        D_AB *= 1e-4 # Convert to m^2/s
 
-        return r
+        return D_AB
     
     def mixture_density(self, Yi, T):
         """
