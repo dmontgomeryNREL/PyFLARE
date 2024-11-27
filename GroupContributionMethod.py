@@ -409,7 +409,7 @@ class groupContribution:
 
         sigmaAB = (sigma_gas + self.sigma) / 2 # (m)
         sigmaAB *= 1e+10 # Convert to Å
-        epsilonAB = (self.epsilon * epsilon_gas) ** 0.5 # J^0.5
+        epsilonAB = (self.epsilon * epsilon_gas) ** 0.5 # J
         Tstar = self.k_B * T / epsilonAB
         A = 1.06036
         B = 0.15610
