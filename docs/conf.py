@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'PyFLARE'
+project = 'FuelLib'
 copyright = '2024, David Montgomery'
 author = 'David Montgomery'
 

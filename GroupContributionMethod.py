@@ -9,9 +9,9 @@ class groupContribution:
     """
     
     # Paths to input directories
-    PyFLARE_PATH = os.path.dirname(os.path.abspath(__file__))
-    gcmTableDir = os.path.join(PyFLARE_PATH, 'gcmTableData')
-    fuelDataDir = os.path.join(PyFLARE_PATH, 'fuelData')
+    FuelLib_PATH = os.path.dirname(os.path.abspath(__file__))
+    gcmTableDir = os.path.join(FuelLib_PATH, 'gcmTableData')
+    fuelDataDir = os.path.join(FuelLib_PATH, 'fuelData')
     groupDecompDir = os.path.join(fuelDataDir, 'groupDecompositionData')
     gcxgcDir = os.path.join(fuelDataDir, 'gcData')
 

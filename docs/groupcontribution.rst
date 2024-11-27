@@ -1,7 +1,7 @@
-PyFLARE
+FuelLib
 =======
 
-The **Python Fuel Library for Advanced Research on Evaporation (PyFLARE)** utilizes
+The **Fuel Library** for advanced research on evaporation **(FuelLib)** utilizes
 the group contribution method (GCM), as developed by Constantinou and 
 Gani\ :footcite:p:`constantinou_new_1994,constantinou_estimation_1995` in the mid-1990s, 
 to provide a systematic approach for estimating the thermodynamic properties of
@@ -11,14 +11,14 @@ By summing these contributions, the GCM accurately predicts essential properties
 including the acentric factor, normal boiling point, liquid molar volume at standard conditions 
 (298 K) and more. This predictive capability is particularly useful for complex 
 mixtures such as sustainable aviation fuels (SAFs), where experimental thermodynamic data 
-is limited. `PyFLARE` provides SAF developers with a means to estimate 
+is limited. `FuelLib` provides SAF developers with a means to estimate 
 these critical properties without extensive physical testing, thereby aiding in 
 the identification of promising fuel compositions before committing to large-scale production.
 
-`PyFLARE` was developed with SAF research in mind. It builds on 
+`FuelLib` was developed with SAF research in mind. It builds on 
 `Pavan B. Govindaraju's Matlab implementation <https://github.com/gpavanb-old/GroupContribution>`_, 
 and includes gas chromatography data (GC x GC) for various jet fuels from the Air Force Research Laboratory\ :footcite:p:`edwards_jet_2020`.
-Additionally, `PyFLARE` includes correlations for the thermodynamic properties of 
+Additionally, `FuelLib` includes correlations for the thermodynamic properties of 
 mixture such as density, viscosity and vapor pressure. The Section :ref:`tab-GCM-properties` 
 outlines the properties for the *i-th* compound in a mixture, which depends on 
 the *k-th* first-order and *j-th* second-order group contributions.
@@ -195,7 +195,7 @@ or the Ambrose-Walton method\ :footcite:p:`ambrose_vapour_1989`.  Both methods s
 
 for the reduced saturated vapor pressure for each compound, 
 :math:`p_{r,\text{sat},i} = p_{\text{sat},i}/p_{c,i}`.  
-The default method in `PyFLARE` is the Lee-Kesler method, as it is 
+The default method in `FuelLib` is the Lee-Kesler method, as it is 
 more stable at higher temperatures. 
 The Lee-Kesler\ :footcite:p:`lee_generalized_1975` method defines
 
@@ -229,7 +229,7 @@ mixture from the individual compound and physical properties defined in
 :ref:`eq-GCM-properties` and :ref:`eq-GCM-correlations`.  These correlations make 
 it possible to evaluate physical properties at non-standard temperatures and 
 pressures, given that group contribution properties are only defined at standard 
-conditions. The :ref:`tab-mixture-properties` available in `PyFLARE` are listed in 
+conditions. The :ref:`tab-mixture-properties` available in `FuelLib` are listed in 
 table below.  Mass and mole fractions defined in Table \ref{tab:mass-mole-fracs} 
 are used throughout this section.
 
