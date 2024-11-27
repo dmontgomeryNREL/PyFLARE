@@ -407,7 +407,7 @@ class groupContribution:
         D_AB (np.ndarray): Diffusion coefficient (num_compounds,).
         """		
 
-        sigmaAB = (sigma_gas + self.sigma) / 2 # (m)
+        sigmaAB = (sigma_gas + self.sigma) / 2 # m
         sigmaAB *= 1e+10 # Convert to Å
         epsilonAB = (self.epsilon * epsilon_gas) ** 0.5 # J
         Tstar = self.k_B * T / epsilonAB
@@ -430,7 +430,7 @@ class groupContribution:
         # Convert pressure from Pa to bar
         p *= 1e-5 # bar
 
-        D_AB = 1e-3 * (3.03 - 0.98 / (M_AB ** 0.5)) * (T ** 1.5) / (p * M_AB ** 0.5 * sigmaAB ** 2 * omegaD) # cm^2/s
+        D_AB = 1e-3 * (3.03 - 0.98 / (M_AB**0.5)) * (T**1.5) / (p * M_AB**0.5 * sigmaAB**2 * omegaD) # cm^2/s
         D_AB *= 1e-4 # Convert to m^2/s
 
         return D_AB
